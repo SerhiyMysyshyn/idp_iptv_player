@@ -1,15 +1,22 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Android
+.gradle/
+build/
 local.properties
+.idea/
+captures/
+.externalNativeBuild/
+
+# Kotlin
+*.iml
+*.kotlin_module
+
+# JetBrains
+*.iws
+*.ipr
+out/
+
+# Logs
+*.log
+
+# Misc
+.DS_Store
