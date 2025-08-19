@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">IPTV Player</string>
+    <string name="play_lists_str">Плейлисти</string>
+    <string name="channels_str">Канали</string>
+    <string name="licked_channels_str">Улюблені канали</string>
+    <string name="settings_str">Налаштування</string>
+    <string name="playlists_empty">Список плейлистів порожній</string>
+    <string name="channels_empty">Список каналів порожній</string>
+    <string name="channel_licked">Додано в Улюблені</string>
+    <string name="channel_not_licked">Додати в Улюблені</string>
+    <string name="fetching_playlists_error">Сталась помилка під час завантаження плейлистів</string>
+    <string name="fetching_channels_error">Сталась помилка під час завантаження каналів</string>
+</resources>
