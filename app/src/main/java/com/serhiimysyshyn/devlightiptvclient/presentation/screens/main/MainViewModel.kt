@@ -1,19 +1,18 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
 
-import androidx.lifecycle.viewModelScope
 import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenEffect
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenEvent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val mainRepository: IMainRepository,
@@ -49,19 +48,19 @@ class MainViewModel(
     }
 
     private fun launchNewScreen(route: String) {
-        viewModelScope.launch {
+        safeLaunch {
             _effect.emit(MainScreenEffect.LaunchNewScreen(route))
         }
     }
 
     private fun launchNewRootScreen(route: String) {
-        viewModelScope.launch {
+        safeLaunch {
             _effect.emit(MainScreenEffect.LaunchNewRootScreen(route))
         }
     }
 
     private fun downloadNewPlaylist(url: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        safeLaunch(dispatcher = Dispatchers.IO) {
             mainRepository.downloadM3UPlaylist(url)
         }
     }

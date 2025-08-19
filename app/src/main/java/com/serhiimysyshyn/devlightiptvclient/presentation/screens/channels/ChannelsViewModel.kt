@@ -1,16 +1,15 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels
 
-import androidx.lifecycle.viewModelScope
 import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenEvent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
 
 class ChannelsViewModel(
     private val mainRepository: IMainRepository,
@@ -30,11 +29,15 @@ class ChannelsViewModel(
     }
 
     private fun loadChannelsByPlaylistId(playlistId: Long) {
-        viewModelScope.launch {
+        safeLaunch(
+            onError = {
+                _state.value = channelsScreenReducer.reduce(
+                    _state.value,
+                    ChannelsScreenEvent.Error
+                )
+            }
+        ) {
             mainRepository.getChannelsByPlaylistId(playlistId)
-                .catch {
-                    _state.value = channelsScreenReducer.reduce(_state.value, ChannelsScreenEvent.Error)
-                }
                 .collect { channels ->
                     _state.value = channelsScreenReducer.reduce(
                         _state.value,
@@ -45,19 +48,19 @@ class ChannelsViewModel(
     }
 
     private fun addToFavourite(channelId: Long) {
-        viewModelScope.launch {
+        safeLaunch {
             mainRepository.addChannelToFavourite(channelId)
         }
     }
 
     private fun removeFromFavourite(channelId: Long) {
-        viewModelScope.launch {
+        safeLaunch {
             mainRepository.removeChannelFromFavourite(channelId)
         }
     }
 
     private fun loadFavouriteChannels() {
-        viewModelScope.launch {
+        safeLaunch {
             mainRepository.getFavouriteChannels()
                 .catch {
                     _state.value = channelsScreenReducer.reduce(_state.value, ChannelsScreenEvent.Error)
