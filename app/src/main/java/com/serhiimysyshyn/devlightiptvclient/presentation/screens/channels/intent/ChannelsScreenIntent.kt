@@ -6,4 +6,5 @@ sealed class ChannelsScreenIntent {
     data object LoadFavouritesChannelsFromDatabase : ChannelsScreenIntent()
     data class AddToFavourite(val channelId: Long) : ChannelsScreenIntent()
     data class RemoveFromFavourite(val channelId: Long) : ChannelsScreenIntent()
+    data class Search(val query: String) : ChannelsScreenIntent()
 }

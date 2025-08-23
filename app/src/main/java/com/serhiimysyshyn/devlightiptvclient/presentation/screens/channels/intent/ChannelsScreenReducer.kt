@@ -5,17 +5,30 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.Chann
 
 class ChannelsScreenReducer : BaseScreenReducer<ChannelsScreenState, ChannelsScreenEvent>() {
 
-    override fun reduce(currentState: ChannelsScreenState, event: ChannelsScreenEvent): ChannelsScreenState {
+    override fun reduce(
+        currentState: ChannelsScreenState,
+        event: ChannelsScreenEvent
+    ): ChannelsScreenState {
         return when (event) {
-            is ChannelsScreenEvent.Success -> currentState.copy(
-                isLoading = false,
-                isError = false,
-                channels = event.channels
-            )
+            is ChannelsScreenEvent.Success -> {
+                val all = event.channels
+                val filtered = if (currentState.query.isBlank()) {
+                    all
+                } else {
+                    all.filter { it.name.contains(currentState.query, ignoreCase = true) }
+                }
+                currentState.copy(
+                    isLoading = false,
+                    isError = false,
+                    allChannels = all,
+                    filteredChannels = filtered
+                )
+            }
             is ChannelsScreenEvent.Error -> currentState.copy(
                 isLoading = false,
                 isError = true,
-                channels = emptyList()
+                allChannels = emptyList(),
+                filteredChannels = emptyList()
             )
         }
     }
