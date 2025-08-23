@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract
 
 import com.serhiimysyshyn.devlightiptvclient.data.models.Playlist
 

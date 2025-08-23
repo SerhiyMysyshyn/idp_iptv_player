@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract
 
 sealed class ChannelsScreenIntent {
 

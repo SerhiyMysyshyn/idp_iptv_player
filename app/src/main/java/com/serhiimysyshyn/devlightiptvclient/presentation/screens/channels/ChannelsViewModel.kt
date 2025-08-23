@@ -2,9 +2,10 @@ package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels
 
 import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenEvent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenIntent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenEvent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenState
 import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

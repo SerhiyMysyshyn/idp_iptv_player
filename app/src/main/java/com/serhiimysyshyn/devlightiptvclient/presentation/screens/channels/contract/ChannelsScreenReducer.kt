@@ -1,7 +1,7 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract
 
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseScreenReducer
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.ChannelsScreenState
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenState
 
 class ChannelsScreenReducer : BaseScreenReducer<ChannelsScreenState, ChannelsScreenEvent>() {
 

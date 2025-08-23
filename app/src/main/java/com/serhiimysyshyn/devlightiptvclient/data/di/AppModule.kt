@@ -5,11 +5,11 @@ import com.serhiimysyshyn.devlightiptvclient.data.database.AppDatabase
 import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
 import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepositoryImpl
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.ChannelsViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenReducer
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.MainViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenReducer
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.PlaylistsViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenReducer
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

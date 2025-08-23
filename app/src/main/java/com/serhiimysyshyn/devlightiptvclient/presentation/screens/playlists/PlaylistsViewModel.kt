@@ -2,9 +2,10 @@ package com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists
 
 import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenEvent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenIntent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenEvent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenState
 import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

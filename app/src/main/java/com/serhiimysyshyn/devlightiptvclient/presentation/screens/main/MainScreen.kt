@@ -10,8 +10,8 @@ import com.serhiimysyshyn.devlightiptvclient.data.navigation.LocalAppNavControll
 import com.serhiimysyshyn.devlightiptvclient.data.navigation.NavigationRoute
 import com.serhiimysyshyn.devlightiptvclient.data.navigation.navigateSafe
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.utils.LaunchMode
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenEffect
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenEffect
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.composables.AddNewPlaylistDialog
 import org.koin.androidx.compose.koinViewModel
 

@@ -32,6 +32,7 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.composables.organism.M
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.ChannelsScreen
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.utils.LaunchMode
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.composables.CustomModalDrawerSheet
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenState
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.PlaylistsScreen
 import com.serhiimysyshyn.devlightiptvclient.presentation.theme.IPTVClientTheme
 import com.serhiimysyshyn.devlightiptvclient.presentation.utils.generateMenuItems

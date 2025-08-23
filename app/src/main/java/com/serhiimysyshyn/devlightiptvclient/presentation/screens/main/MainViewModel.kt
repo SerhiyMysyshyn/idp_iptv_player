@@ -2,10 +2,11 @@ package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
 
 import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenEffect
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenEvent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenIntent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenEffect
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenEvent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenState
 import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

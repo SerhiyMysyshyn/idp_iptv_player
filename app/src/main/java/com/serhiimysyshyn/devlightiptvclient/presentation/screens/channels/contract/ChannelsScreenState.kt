@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract
 
 import com.serhiimysyshyn.devlightiptvclient.data.models.Channel
 
