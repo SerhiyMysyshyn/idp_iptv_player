@@ -1,16 +1,14 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.composables.molecule
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.settings.composables
 
-import android.graphics.drawable.Drawable
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -19,31 +17,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.serhiimysyshyn.devlightiptvclient.presentation.theme.IPTVClientTheme
+import com.serhiimysyshyn.devlightiptvclient.presentation.utils.DevicePreviews
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CustomListItemV1(
+fun SettingsRowItem(
     modifier: Modifier = Modifier,
     title: String,
     description: String = "",
-    icon: Drawable? = null,
+    value: String = "",
     onItemClicked: () -> Unit,
-    functionalIcon: ImageVector? = null,
-    onFunctionalIconClicked: () -> Unit = {},
 ) {
     Card(
         onClick = onItemClicked,
         modifier = modifier
             .wrapContentHeight()
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = ShapeDefaults.Medium,
         colors = CardColors(
             containerColor = IPTVClientTheme.colors.onBackground,
@@ -51,31 +44,14 @@ fun CustomListItemV1(
             disabledContainerColor = IPTVClientTheme.colors.onBackground,
             disabledContentColor = IPTVClientTheme.colors.primary
         )
-
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxHeight()
                 .fillMaxWidth(1f)
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
-            if (icon != null) {
-                GlideImage(
-                    model = icon,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(color = IPTVClientTheme.colors.primary),
-                    modifier = Modifier
-                        .size(36.dp, 36.dp)
-                )
-            }
-
-            Spacer(Modifier.width(16.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-            ) {
+            Column {
                 Text(
                     text = title,
                     fontSize = 18.sp,
@@ -95,18 +71,33 @@ fun CustomListItemV1(
                 }
             }
 
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.weight(1f))
 
-            if (functionalIcon != null) {
-                Icon(
-                    functionalIcon,
-                    null,
-                    modifier = Modifier
-                        .clickable {
-                            onFunctionalIconClicked.invoke()
-                        }
+            if (value.isNotEmpty()) {
+                Text(
+                    text = value,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
+
+            Icon(
+                Icons.Default.KeyboardArrowRight,
+                contentDescription = null
+            )
         }
+    }
+}
+
+@Composable
+@DevicePreviews
+fun SettingsRowItemPreview() {
+    IPTVClientTheme {
+        SettingsRowItem(
+            title = "Тема додатку",
+            value = "Dark",
+            onItemClicked = {}
+        )
     }
 }

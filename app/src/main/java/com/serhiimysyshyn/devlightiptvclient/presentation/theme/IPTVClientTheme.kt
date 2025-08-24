@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 data class AppColors(
     val background: Color,
     val onBackground: Color,
+    val backgroundSecondary: Color,
     val primary: Color,
     val onPrimary: Color,
     val surface: Color,
@@ -25,6 +26,7 @@ data class AppColors(
 val LightColors = AppColors(
     background = Color(0xFFEBEDF1),
     onBackground = Color(0xFF00B0A7),
+    backgroundSecondary = Color(0xFFD7D8DC),
     primary = Color(0xFF000000),
     onPrimary = Color.White,
     surface = Color(0xFFBA3518),
@@ -34,6 +36,7 @@ val LightColors = AppColors(
 val DarkColors = AppColors(
     background = Color(0xFF054B5D),
     onBackground = Color(0xFF232C47),
+    backgroundSecondary = Color(0xFF06556C),
     primary = Color(0xFFFFFFFF),
     onPrimary = Color.Black,
     surface = Color(0xFFBA3518),
@@ -60,9 +63,15 @@ val LocalAppTypography = staticCompositionLocalOf { BaseTypography }
 
 @Composable
 fun IPTVClientTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    appTheme: AppThemeType = AppThemeType.SYSTEM,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (appTheme) {
+        AppThemeType.LIGHT -> false
+        AppThemeType.DARK -> true
+        AppThemeType.SYSTEM -> isSystemInDarkTheme()
+    }
+
     val colors = if (darkTheme) DarkColors else LightColors
     val typography = BaseTypography
 

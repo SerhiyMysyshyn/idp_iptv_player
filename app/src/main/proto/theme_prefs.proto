@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.serhiimysyshyn.devlightiptvclient.datastore";
+option java_multiple_files = true;
+
+enum ThemeTypeProto {
+    THEME_LIGHT = 0;
+    THEME_DARK = 1;
+    THEME_SYSTEM = 2;
+}
+
+message ThemePreferences {
+    ThemeTypeProto theme = 1;
+}

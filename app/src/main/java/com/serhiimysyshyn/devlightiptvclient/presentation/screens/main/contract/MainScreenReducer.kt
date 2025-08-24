@@ -1,7 +1,7 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract
 
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseScreenReducer
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.MainScreenState
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenState
 
 class MainScreenReducer : BaseScreenReducer<MainScreenState, MainScreenEvent>() {
 

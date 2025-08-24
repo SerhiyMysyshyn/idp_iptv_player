@@ -58,8 +58,10 @@ fun AddNewPlaylistDialog(
                         .fillMaxWidth()
                         .padding(8.dp),
                     onClick = {
-                        onConfirmClicked.invoke(text)
-                        onDismiss()
+                        if (text.endsWith(".m3u")) {
+                            onConfirmClicked.invoke(text)
+                            onDismiss()
+                        }
                     }
                 ) {
                     Text(

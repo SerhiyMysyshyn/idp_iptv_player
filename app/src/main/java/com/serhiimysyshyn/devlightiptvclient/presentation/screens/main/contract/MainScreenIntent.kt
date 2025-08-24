@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract
 
 sealed class MainScreenIntent {
     data object OpenAddNewPlaylistDialog : MainScreenIntent()

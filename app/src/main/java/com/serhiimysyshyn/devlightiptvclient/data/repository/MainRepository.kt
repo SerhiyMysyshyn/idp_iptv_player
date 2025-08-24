@@ -4,6 +4,7 @@ import android.net.Uri
 import com.serhiimysyshyn.devlightiptvclient.data.database.dao.ChannelDao
 import com.serhiimysyshyn.devlightiptvclient.data.database.dao.PlaylistDao
 import com.serhiimysyshyn.devlightiptvclient.data.mappers.toEntity
+import com.serhiimysyshyn.devlightiptvclient.data.mappers.toUIModel
 import com.serhiimysyshyn.devlightiptvclient.data.mappers.toUIModelList
 import com.serhiimysyshyn.devlightiptvclient.data.models.Channel
 import com.serhiimysyshyn.devlightiptvclient.data.models.Playlist
@@ -15,10 +16,32 @@ import kotlin.collections.firstOrNull
 import kotlin.collections.isNotEmpty
 import kotlin.collections.map
 
+interface MainRepository {
+    suspend fun downloadM3UPlaylist(url: String)
+
+    fun getPlaylists(): Flow<List<Playlist>>
+
+    suspend fun addPlaylist(playlist: Playlist)
+
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun clearAll()
+
+    suspend fun getChannelsByPlaylistId(playlistId: Long): Flow<List<Channel>>
+
+    suspend fun getFavouriteChannels(): Flow<List<Channel>>
+
+    suspend fun addChannelToFavourite(channelId: Long)
+
+    suspend fun removeChannelFromFavourite(channelId: Long)
+
+    suspend fun getChannelInfoById(channelId: Long): Channel
+}
+
 class MainRepositoryImpl(
     private val playlistDao: PlaylistDao,
     private val channelDao: ChannelDao
-): IMainRepository {
+): MainRepository {
 
     override suspend fun downloadM3UPlaylist(url: String) {
         val client = OkHttpClient()
@@ -112,5 +135,9 @@ class MainRepositoryImpl(
 
     override suspend fun removeChannelFromFavourite(channelId: Long) {
         return channelDao.updateIsFavorite(channelId, false)
+    }
+
+    override suspend fun getChannelInfoById(channelId: Long): Channel {
+        return channelDao.getChannelInfoById(channelId).toUIModel()
     }
 }

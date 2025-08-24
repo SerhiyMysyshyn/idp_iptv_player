@@ -30,4 +30,7 @@ interface ChannelDao {
 
     @Query("UPDATE channels SET isFavorite = :isFavorite WHERE id = :id")
     suspend fun updateIsFavorite(id: Long, isFavorite: Boolean)
+
+    @Query("SELECT * FROM channels WHERE id = :id")
+    suspend fun getChannelInfoById(id: Long): ChannelEntity
 }

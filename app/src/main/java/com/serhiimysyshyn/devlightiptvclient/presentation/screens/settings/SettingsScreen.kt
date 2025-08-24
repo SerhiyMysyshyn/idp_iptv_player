@@ -1,16 +1,15 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.settings
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun SettingsScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-
-    }
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit,
+) {
+    SettingsContent(
+        modifier = modifier,
+        onNavigateBack = onNavigateBack,
+    )
 }

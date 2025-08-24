@@ -14,7 +14,7 @@ sealed class NavigationRoute() {
 
     data class Channels(
         val launchMode: LaunchMode,
-        val playlistId: Long
+        val playlistId: Long,
     ) : NavigationRoute() {
         companion object {
             const val DESTINATION = "channels/{launchMode}/{playlistId}"
@@ -25,14 +25,13 @@ sealed class NavigationRoute() {
 
     data class Player(
         val channelId: Long,
-        val videoUrl: String
     ) : NavigationRoute() {
 
         companion object {
-            const val DESTINATION = "player/{channelId}/{videoUrl}"
+            const val DESTINATION = "player/{channelId}"
         }
 
-        val route: String get() = "player/$channelId/$videoUrl"
+        val route: String get() = "player/$channelId"
     }
 
     data object Settings : NavigationRoute() {

@@ -1,6 +1,5 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,8 +9,8 @@ import com.serhiimysyshyn.devlightiptvclient.data.navigation.LocalAppNavControll
 import com.serhiimysyshyn.devlightiptvclient.data.navigation.NavigationRoute
 import com.serhiimysyshyn.devlightiptvclient.data.navigation.navigateSafe
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.utils.LaunchMode
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenEffect
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent.MainScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenEffect
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.composables.AddNewPlaylistDialog
 import org.koin.androidx.compose.koinViewModel
 
@@ -92,7 +91,6 @@ fun MainScreen() {
                 MainScreenIntent.LaunchNewRootScreen(
                     route = NavigationRoute.Player(
                         channelId = channel.id,
-                        videoUrl = Uri.encode(channel.url)
                     ).route
                 )
             )

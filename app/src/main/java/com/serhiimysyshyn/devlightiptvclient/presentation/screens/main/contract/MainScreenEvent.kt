@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract
 
 sealed class MainScreenEvent {
     data object ShowAddNewPlaylistDialog : MainScreenEvent()

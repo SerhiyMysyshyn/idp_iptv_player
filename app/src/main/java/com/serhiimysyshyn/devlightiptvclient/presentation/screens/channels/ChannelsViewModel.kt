@@ -1,19 +1,19 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels
 
-import androidx.lifecycle.viewModelScope
-import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
+import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenEvent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenIntent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenEvent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenState
+import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 
 class ChannelsViewModel(
-    private val mainRepository: IMainRepository,
+    private val mainRepository: MainRepository,
     private val channelsScreenReducer: ChannelsScreenReducer
 ): BaseViewModel<ChannelsScreenIntent>() {
 
@@ -21,20 +21,25 @@ class ChannelsViewModel(
     val state: StateFlow<ChannelsScreenState> = _state.asStateFlow()
 
     override fun processIntent(intent: ChannelsScreenIntent) {
-        when(intent) {
+        when (intent) {
             is ChannelsScreenIntent.LoadChannelsFromDatabase -> loadChannelsByPlaylistId(intent.playlistId)
+            is ChannelsScreenIntent.LoadFavouritesChannelsFromDatabase -> loadFavouriteChannels()
             is ChannelsScreenIntent.AddToFavourite -> addToFavourite(intent.channelId)
             is ChannelsScreenIntent.RemoveFromFavourite -> removeFromFavourite(intent.channelId)
-            is ChannelsScreenIntent.LoadFavouritesChannelsFromDatabase -> loadFavouriteChannels()
+            is ChannelsScreenIntent.Search -> search(intent.query)
         }
     }
 
     private fun loadChannelsByPlaylistId(playlistId: Long) {
-        viewModelScope.launch {
+        safeLaunch(
+            onError = {
+                _state.value = channelsScreenReducer.reduce(
+                    _state.value,
+                    ChannelsScreenEvent.Error
+                )
+            }
+        ) {
             mainRepository.getChannelsByPlaylistId(playlistId)
-                .catch {
-                    _state.value = channelsScreenReducer.reduce(_state.value, ChannelsScreenEvent.Error)
-                }
                 .collect { channels ->
                     _state.value = channelsScreenReducer.reduce(
                         _state.value,
@@ -44,30 +49,48 @@ class ChannelsViewModel(
         }
     }
 
+    private fun loadFavouriteChannels() {
+        safeLaunch(
+            onError = {
+                _state.value = channelsScreenReducer.reduce(
+                    _state.value,
+                    ChannelsScreenEvent.Error
+                )
+            }
+        ) {
+            mainRepository.getFavouriteChannels()
+                .collect { channels ->
+                    _state.value = channelsScreenReducer.reduce(
+                        _state.value,
+                        ChannelsScreenEvent.Success(channels)
+                    )
+                }
+        }
+    }
+
+    private fun search(query: String) {
+        _state.update { current ->
+            val filtered = if (query.isBlank()) {
+                current.allChannels
+            } else {
+                current.allChannels.filter { it.name.contains(query, ignoreCase = true) }
+            }
+            current.copy(
+                query = query,
+                filteredChannels = filtered.toList()
+            )
+        }
+    }
+
     private fun addToFavourite(channelId: Long) {
-        viewModelScope.launch {
+        safeLaunch {
             mainRepository.addChannelToFavourite(channelId)
         }
     }
 
     private fun removeFromFavourite(channelId: Long) {
-        viewModelScope.launch {
+        safeLaunch {
             mainRepository.removeChannelFromFavourite(channelId)
-        }
-    }
-
-    private fun loadFavouriteChannels() {
-        viewModelScope.launch {
-            mainRepository.getFavouriteChannels()
-                .catch {
-                    _state.value = channelsScreenReducer.reduce(_state.value, ChannelsScreenEvent.Error)
-                }
-                .collect { channels ->
-                    _state.value = channelsScreenReducer.reduce(
-                        _state.value,
-                        ChannelsScreenEvent.Success(channels)
-                    )
-                }
         }
     }
 }
