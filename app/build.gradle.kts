@@ -1,4 +1,3 @@
-import com.google.wireless.android.sdk.stats.SmlTransformEvent
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
@@ -9,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     id("com.google.protobuf") version "0.9.5"
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"
 }
 
 android {
@@ -44,6 +45,12 @@ android {
     buildFeatures {
         compose = true
     }
+}
+
+detekt {
+    toolVersion = "1.23.0"
+    config = files("detekt-config.yml")
+    buildUponDefaultConfig = true
 }
 
 protobuf {
@@ -132,10 +139,10 @@ val setupPreCommitHook by tasks.register("setupPreCommitHook") {
             #!/bin/sh
             echo "Running lint checks..."
             ./gradlew ktlintCheck detekt
-            RESULT=$${'$'}  # <-- тут подвоїли $ для Kotlin
-            if [ $${'$'}RESULT -ne 0 ]; then
+            RESULT=$?
+            if [ ${'$'}RESULT -ne 0 ]; then
                 echo "Code style checks failed. Commit aborted."
-            exit 1
+                exit 1
             fi
             exit 0
         """.trimIndent()
