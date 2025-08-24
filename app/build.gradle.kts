@@ -1,3 +1,8 @@
+import com.google.wireless.android.sdk.stats.SmlTransformEvent
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -109,4 +114,35 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+val setupPreCommitHook by tasks.register("setupPreCommitHook") {
+    group = "git hooks"
+    description = "Installs pre-commit Git hook to run lint checks"
+
+    doLast {
+        val gitHooksDir = Paths.get(rootDir.absolutePath, ".git", "hooks")
+        if (!Files.exists(gitHooksDir)) {
+            println(".git/hooks directory does not exist. Are you inside a Git repo?")
+            return@doLast
+        }
+
+        val preCommitHook = gitHooksDir.resolve("pre-commit")
+        val script = """
+            #!/bin/sh
+            echo "Running lint checks..."
+            ./gradlew ktlintCheck detekt
+            RESULT=$${'$'}  # <-- тут подвоїли $ для Kotlin
+            if [ $${'$'}RESULT -ne 0 ]; then
+                echo "Code style checks failed. Commit aborted."
+            exit 1
+            fi
+            exit 0
+        """.trimIndent()
+
+        Files.write(preCommitHook, script.toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+        preCommitHook.toFile().setExecutable(true)
+
+        println("Pre-commit hook installed successfully!")
+    }
 }
