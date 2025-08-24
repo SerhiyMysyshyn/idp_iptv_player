@@ -8,6 +8,8 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.Chann
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenReducer
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.MainViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.PlayerViewModel
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.contract.PlayerScreenReducer
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.PlaylistsViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenReducer
 import org.koin.android.ext.koin.androidContext
@@ -35,9 +37,11 @@ val appModule = module {
     viewModel { MainViewModel(get(), get()) }
     viewModel { PlaylistsViewModel(get(), get()) }
     viewModel { ChannelsViewModel(get(), get()) }
+    viewModel { PlayerViewModel(get(), get(), get()) }
 
     // Others
     factory { MainScreenReducer() }
     factory { PlaylistsScreenReducer() }
     factory { ChannelsScreenReducer() }
+    factory { PlayerScreenReducer() }
 }

@@ -1,6 +1,5 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -92,7 +91,6 @@ fun MainScreen() {
                 MainScreenIntent.LaunchNewRootScreen(
                     route = NavigationRoute.Player(
                         channelId = channel.id,
-                        videoUrl = Uri.encode(channel.url)
                     ).route
                 )
             )

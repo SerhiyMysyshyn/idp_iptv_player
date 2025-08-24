@@ -2,42 +2,98 @@ package com.serhiimysyshyn.devlightiptvclient.presentation.screens.player
 
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.res.ResourcesCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.serhiimysyshyn.devlightiptvclient.R
+import com.serhiimysyshyn.devlightiptvclient.presentation.composables.molecule.CustomListItemV1
+import com.serhiimysyshyn.devlightiptvclient.presentation.composables.organism.MainAppBar
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.composables.PresetDialog
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.contract.PlayerScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.equalizer.PlayerEqualizer
 import com.serhiimysyshyn.devlightiptvclient.presentation.theme.IPTVClientTheme
+import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 internal fun PlayerContent(
     modifier: Modifier = Modifier,
-    channelId: Long,
-    videoUrl: String
+    onNavigateBack: () -> Unit,
 ) {
+    val viewModel: PlayerViewModel = koinViewModel()
+    val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri(videoUrl)
-            setMediaItem(mediaItem)
-            prepare()
             playWhenReady = true
         }
     }
 
-    // UI
+    val equalizer = remember { PlayerEqualizer(exoPlayer) }
+    var showDialog by remember { mutableStateOf(false) }
+
+    DisposableEffect(Unit) {
+        equalizer.init()
+        onDispose {
+            equalizer.release()
+            exoPlayer.release()
+        }
+    }
+
+    LaunchedEffect(state.currentPreset) {
+        equalizer.applyPreset(state.currentPreset)
+    }
+
+    LaunchedEffect(state.currentChannel?.url) {
+        val url = state.currentChannel?.url
+        if (!url.isNullOrEmpty()) {
+            val mediaItem = MediaItem.fromUri(url)
+            exoPlayer.setMediaItem(mediaItem)
+            exoPlayer.prepare()
+        }
+    }
+
     Scaffold(
         containerColor = IPTVClientTheme.colors.background,
     ) { paddings ->
@@ -46,11 +102,17 @@ internal fun PlayerContent(
                 .fillMaxSize()
                 .padding(
                     start = 0.dp,
-                    top = paddings.calculateTopPadding(),
                     end = 0.dp,
                     bottom = paddings.calculateBottomPadding()
                 )
         ) {
+            MainAppBar(
+                title = state.currentChannel?.name ?: "Невідомо",
+                openMenuIcon = Icons.AutoMirrored.Filled.ArrowBack
+            ) {
+                onNavigateBack.invoke()
+            }
+
             AndroidView(
                 factory = {
                     PlayerView(it).apply {
@@ -67,60 +129,133 @@ internal fun PlayerContent(
                     .aspectRatio(16 / 9f)
             )
 
-//            Column(
-//                modifier = Modifier
-//                    .padding(16.dp)
-//            ) {
-//                Text(
-//                    text = "title",
-//                    style = IPTVClientTheme.typography.h2
-//                )
-//
-//                Spacer(Modifier.height(16.dp))
-//
-//                Text(
-//                    text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-//                    style = IPTVClientTheme.typography.body
-//                )
-//
-//                Spacer(Modifier.height(16.dp))
-//
-//                Row(
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    Button(
-//                        onClick = { /* TODO */ },
-//                        modifier = Modifier
-//                            .weight(1f)
-//                            .widthIn(max = 200.dp)
-//                            .padding(4.dp)
-//                    ) {
-//                        Icon(Icons.Default.Favorite, contentDescription = null)
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text("Кнопка 1")
-//                    }
-//
-//                    Button(
-//                        onClick = { /* TODO */ },
-//                        modifier = Modifier
-//                            .weight(1f)
-//                            .widthIn(max = 200.dp)
-//                            .padding(4.dp)
-//                    ) {
-//                        Icon(Icons.Default.Build, contentDescription = null)
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text("Кнопка 2")
-//                    }
-//                }
-//            }
-        }
-    }
+            Spacer(Modifier.height(16.dp))
 
+            Text(
+                text = "Відеопотік: ${state.currentChannel?.name ?: "Невідомо"}",
+                style = IPTVClientTheme.typography.h2,
+                color = IPTVClientTheme.colors.primary,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+            )
 
-    // Звільнення ресурсів при виході з Composable
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.release()
+            Spacer(Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Button(
+                    onClick = {
+                        state.currentChannel?.id?.let {
+                            viewModel.processIntent(
+                                PlayerScreenIntent.AddChannelToFavourite(
+                                    it
+                                )
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = if (state.currentChannel?.isFavorite ?: false) {
+                            Icons.Default.Favorite
+                        } else {
+                            Icons.Default.FavoriteBorder
+                        },
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        if (state.currentChannel?.isFavorite ?: false) {
+                            "Додано в улюблені канали"
+                        } else {
+                            "Додати в улюблені канали"
+                        }
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        showDialog = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                ) {
+                    GlideImage(
+                        model = ResourcesCompat.getDrawable(
+                            context.resources,
+                            R.drawable.outline_equalizer_24,
+                            context.theme
+                        ),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(color = IPTVClientTheme.colors.primary),
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Еквалайзер: ${state.currentPreset.name}")
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            if (state.likedChannels.isNotEmpty()) {
+                Card(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 16.dp),
+                    shape = ShapeDefaults.Medium,
+                    colors = CardColors(
+                        containerColor = IPTVClientTheme.colors.backgroundSecondary,
+                        contentColor = IPTVClientTheme.colors.primary,
+                        disabledContainerColor = IPTVClientTheme.colors.onBackground,
+                        disabledContentColor = IPTVClientTheme.colors.primary
+                    )
+
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(state.likedChannels) { channel ->
+                            CustomListItemV1(
+                                title = channel.name,
+                                icon = ResourcesCompat.getDrawable(
+                                    context.resources,
+                                    R.drawable.outline_media_link_24,
+                                    context.theme
+                                ),
+                                onItemClicked = {
+                                    viewModel.processIntent(
+                                        PlayerScreenIntent.LoadChannel(
+                                            channelId = channel.id
+                                        )
+                                    )
+                                },
+                                functionalIcon = Icons.Default.Favorite
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (showDialog) {
+                PresetDialog(
+                    currentPreset = state.currentPreset,
+                    onPresetSelected = { preset ->
+                        viewModel.processIntent(PlayerScreenIntent.ApplyPreset(preset))
+                        showDialog = false
+                    },
+                    onDismiss = { showDialog = false }
+                )
+            }
         }
     }
 }

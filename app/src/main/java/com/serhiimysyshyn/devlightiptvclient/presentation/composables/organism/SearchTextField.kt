@@ -31,7 +31,11 @@ internal fun SearchTextField(
         placeholder = { Text(text = placeholder) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp
+            ),
         singleLine = true,
         shape = ShapeDefaults.Medium,
         colors = TextFieldDefaults.colors().copy(

@@ -4,6 +4,7 @@ import android.net.Uri
 import com.serhiimysyshyn.devlightiptvclient.data.database.dao.ChannelDao
 import com.serhiimysyshyn.devlightiptvclient.data.database.dao.PlaylistDao
 import com.serhiimysyshyn.devlightiptvclient.data.mappers.toEntity
+import com.serhiimysyshyn.devlightiptvclient.data.mappers.toUIModel
 import com.serhiimysyshyn.devlightiptvclient.data.mappers.toUIModelList
 import com.serhiimysyshyn.devlightiptvclient.data.models.Channel
 import com.serhiimysyshyn.devlightiptvclient.data.models.Playlist
@@ -112,5 +113,9 @@ class MainRepositoryImpl(
 
     override suspend fun removeChannelFromFavourite(channelId: Long) {
         return channelDao.updateIsFavorite(channelId, false)
+    }
+
+    override suspend fun getChannelInfoById(channelId: Long): Channel {
+        return channelDao.getChannelInfoById(channelId).toUIModel()
     }
 }

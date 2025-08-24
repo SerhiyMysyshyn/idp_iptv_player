@@ -8,13 +8,11 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.utils.DevicePreviews
 @Composable
 fun PlayerScreen(
     modifier: Modifier = Modifier,
-    channelId: Long,
-    videoUrl: String
+    onNavigateBack: () -> Unit,
 ) {
     PlayerContent(
         modifier = modifier,
-        channelId = channelId,
-        videoUrl = videoUrl
+        onNavigateBack = onNavigateBack,
     )
 }
 
@@ -23,8 +21,7 @@ fun PlayerScreen(
 fun PlayerScreenPreview() {
     IPTVClientTheme {
         PlayerContent(
-            channelId = 1,
-            videoUrl = ""
+            onNavigateBack = {},
         )
     }
 }

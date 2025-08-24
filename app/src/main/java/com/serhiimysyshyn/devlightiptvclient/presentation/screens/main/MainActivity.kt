@@ -1,6 +1,5 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,16 +41,12 @@ class MainActivity : ComponentActivity() {
                             route = NavigationRoute.Player.DESTINATION,
                             arguments = listOf(
                                 navArgument("channelId") { type = NavType.LongType },
-                                navArgument("videoUrl") { type = NavType.StringType }
                             )
                         ) { backStackEntry ->
-                            val id = backStackEntry.arguments?.getLong("channelId") ?: -1
-                            val url = backStackEntry.arguments?.getString("videoUrl")?.let {
-                                Uri.decode(it)
-                            } ?: ""
                             PlayerScreen(
-                                channelId = id,
-                                videoUrl = url
+                                onNavigateBack = {
+                                    rootNavController.popBackStack()
+                                }
                             )
                         }
 

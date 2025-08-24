@@ -22,4 +22,6 @@ interface IMainRepository {
     suspend fun addChannelToFavourite(channelId: Long)
 
     suspend fun removeChannelFromFavourite(channelId: Long)
+
+    suspend fun getChannelInfoById(channelId: Long): Channel
 }
