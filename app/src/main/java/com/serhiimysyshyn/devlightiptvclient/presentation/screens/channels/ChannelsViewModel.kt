@@ -1,6 +1,6 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels
 
-import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
+import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenEvent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenIntent
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class ChannelsViewModel(
-    private val mainRepository: IMainRepository,
+    private val mainRepository: MainRepository,
     private val channelsScreenReducer: ChannelsScreenReducer
 ): BaseViewModel<ChannelsScreenIntent>() {
 

@@ -1,6 +1,6 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
 
-import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
+import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenEffect
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenEvent
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel(
-    private val mainRepository: IMainRepository,
+    private val mainRepository: MainRepository,
     private val mainScreenReducer: MainScreenReducer
 ) : BaseViewModel<MainScreenIntent>() {
 

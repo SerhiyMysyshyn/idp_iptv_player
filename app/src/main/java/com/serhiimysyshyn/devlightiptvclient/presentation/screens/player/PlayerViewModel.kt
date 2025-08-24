@@ -1,7 +1,7 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.player
 
 import androidx.lifecycle.SavedStateHandle
-import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
+import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.contract.PlayerScreenEvent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.player.contract.PlayerScreenIntent
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class PlayerViewModel(
     savedStateHandle: SavedStateHandle,
-    private val mainRepository: IMainRepository,
+    private val mainRepository: MainRepository,
     private val playerScreenReducer: PlayerScreenReducer
 ) : BaseViewModel<PlayerScreenIntent>() {
 

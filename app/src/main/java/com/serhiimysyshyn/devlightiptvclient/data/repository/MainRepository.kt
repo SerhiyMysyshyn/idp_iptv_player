@@ -16,10 +16,32 @@ import kotlin.collections.firstOrNull
 import kotlin.collections.isNotEmpty
 import kotlin.collections.map
 
+interface MainRepository {
+    suspend fun downloadM3UPlaylist(url: String)
+
+    fun getPlaylists(): Flow<List<Playlist>>
+
+    suspend fun addPlaylist(playlist: Playlist)
+
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun clearAll()
+
+    suspend fun getChannelsByPlaylistId(playlistId: Long): Flow<List<Channel>>
+
+    suspend fun getFavouriteChannels(): Flow<List<Channel>>
+
+    suspend fun addChannelToFavourite(channelId: Long)
+
+    suspend fun removeChannelFromFavourite(channelId: Long)
+
+    suspend fun getChannelInfoById(channelId: Long): Channel
+}
+
 class MainRepositoryImpl(
     private val playlistDao: PlaylistDao,
     private val channelDao: ChannelDao
-): IMainRepository {
+): MainRepository {
 
     override suspend fun downloadM3UPlaylist(url: String) {
         val client = OkHttpClient()

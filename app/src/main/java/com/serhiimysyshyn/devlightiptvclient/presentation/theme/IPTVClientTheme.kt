@@ -63,9 +63,15 @@ val LocalAppTypography = staticCompositionLocalOf { BaseTypography }
 
 @Composable
 fun IPTVClientTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    appTheme: AppThemeType = AppThemeType.SYSTEM,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (appTheme) {
+        AppThemeType.LIGHT -> false
+        AppThemeType.DARK -> true
+        AppThemeType.SYSTEM -> isSystemInDarkTheme()
+    }
+
     val colors = if (darkTheme) DarkColors else LightColors
     val typography = BaseTypography
 
