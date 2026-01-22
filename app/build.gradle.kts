@@ -1,8 +1,15 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
+    id("com.google.protobuf") version "0.9.5"
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"
 }
 
 android {
@@ -40,6 +47,27 @@ android {
     }
 }
 
+detekt {
+    toolVersion = "1.23.0"
+    config = files("detekt-config.yml")
+    buildUponDefaultConfig = true
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
 kapt {
     correctErrorTypes = true
 }
@@ -49,6 +77,9 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
+
+    implementation("androidx.datastore:datastore:1.1.1")
+    implementation("com.google.protobuf:protobuf-javalite:3.25.1")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -90,4 +121,35 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+val setupPreCommitHook by tasks.register("setupPreCommitHook") {
+    group = "git hooks"
+    description = "Installs pre-commit Git hook to run lint checks"
+
+    doLast {
+        val gitHooksDir = Paths.get(rootDir.absolutePath, ".git", "hooks")
+        if (!Files.exists(gitHooksDir)) {
+            println(".git/hooks directory does not exist. Are you inside a Git repo?")
+            return@doLast
+        }
+
+        val preCommitHook = gitHooksDir.resolve("pre-commit")
+        val script = """
+            #!/bin/sh
+            echo "Running lint checks..."
+            ./gradlew ktlintCheck detekt
+            RESULT=$?
+            if [ ${'$'}RESULT -ne 0 ]; then
+                echo "Code style checks failed. Commit aborted."
+                exit 1
+            fi
+            exit 0
+        """.trimIndent()
+
+        Files.write(preCommitHook, script.toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+        preCommitHook.toFile().setExecutable(true)
+
+        println("Pre-commit hook installed successfully!")
+    }
 }

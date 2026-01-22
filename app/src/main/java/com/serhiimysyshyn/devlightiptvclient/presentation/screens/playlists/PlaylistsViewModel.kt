@@ -1,21 +1,20 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists
 
-import androidx.lifecycle.viewModelScope
-import com.serhiimysyshyn.devlightiptvclient.data.repository.IMainRepository
+import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseViewModel
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenEvent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenIntent
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent.PlaylistsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenEvent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenReducer
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenState
+import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class PlaylistsViewModel(
-    private val mainRepository: IMainRepository,
+    private val mainRepository: MainRepository,
     private val playlistsScreenReducer: PlaylistsScreenReducer
 ) : BaseViewModel<PlaylistsScreenIntent>() {
 
@@ -42,11 +41,15 @@ class PlaylistsViewModel(
     }
 
     private fun loadPlaylistFromDatabase() {
-        viewModelScope.launch {
+        safeLaunch(
+            onError = {
+                _state.value = playlistsScreenReducer.reduce(
+                    _state.value,
+                    PlaylistsScreenEvent.Error
+                )
+            }
+        ) {
             mainRepository.getPlaylists()
-                .catch {
-                    _state.value = playlistsScreenReducer.reduce(_state.value, PlaylistsScreenEvent.Error)
-                }
                 .collect { playlists ->
                     _state.value = playlistsScreenReducer.reduce(
                         _state.value,
@@ -57,7 +60,15 @@ class PlaylistsViewModel(
     }
 
     private fun downloadPlaylist(playlistUrl: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        safeLaunch(
+            dispatcher = Dispatchers.IO,
+            onError = {
+                _state.value = playlistsScreenReducer.reduce(
+                    _state.value,
+                    PlaylistsScreenEvent.Error
+                )
+            }
+        ) {
             mainRepository.downloadM3UPlaylist(playlistUrl)
         }
     }

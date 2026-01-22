@@ -25,7 +25,8 @@ import androidx.core.content.res.ResourcesCompat
 import com.serhiimysyshyn.devlightiptvclient.R
 import com.serhiimysyshyn.devlightiptvclient.data.models.Channel
 import com.serhiimysyshyn.devlightiptvclient.presentation.composables.molecule.CustomListItemV1
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent.ChannelsScreenIntent
+import com.serhiimysyshyn.devlightiptvclient.presentation.composables.organism.SearchTextField
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract.ChannelsScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.utils.LaunchMode
 import com.serhiimysyshyn.devlightiptvclient.presentation.theme.IPTVClientTheme
 import org.koin.androidx.compose.koinViewModel
@@ -76,15 +77,23 @@ internal fun ChannelsContent(
                 )
             }
 
-            state.channels.isNotEmpty() -> {
+            state.filteredChannels.isNotEmpty() -> {
                 Column(
                     modifier = modifier.fillMaxSize()
                 ) {
+                    SearchTextField(
+                        value = state.query,
+                        placeholder = "Пошук",
+                        onValueChange = { query ->
+                            viewModel.processIntent(ChannelsScreenIntent.Search(query))
+                        }
+                    )
+
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(state.channels) { channel ->
+                        items(state.filteredChannels) { channel ->
                             CustomListItemV1(
                                 title = channel.name,
                                 icon = ResourcesCompat.getDrawable(

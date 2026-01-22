@@ -32,9 +32,11 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.composables.organism.M
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.ChannelsScreen
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.utils.LaunchMode
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.composables.CustomModalDrawerSheet
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract.MainScreenState
 import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.PlaylistsScreen
 import com.serhiimysyshyn.devlightiptvclient.presentation.theme.IPTVClientTheme
 import com.serhiimysyshyn.devlightiptvclient.presentation.utils.generateMenuItems
+import com.serhiimysyshyn.devlightiptvclient.presentation.utils.safeLaunch
 import kotlinx.coroutines.launch
 
 @Composable
@@ -57,7 +59,7 @@ internal fun MainContent(
                 menuItems = generateMenuItems(context),
                 selectedMenuItemIndex = state.selectedMenuItemIndex,
                 onMenuItemClicked = { menuItem ->
-                    scope.launch {
+                    scope.safeLaunch {
                         drawerState.close()
                     }
                     onMenuItemClicked.invoke(menuItem.index)
@@ -72,7 +74,7 @@ internal fun MainContent(
                     title = context.getString(R.string.app_name),
                     openMenuIcon = Icons.Default.Menu,
                     onClick = {
-                        scope.launch { drawerState.open() }
+                        scope.safeLaunch { drawerState.open() }
                     }
                 )
             },

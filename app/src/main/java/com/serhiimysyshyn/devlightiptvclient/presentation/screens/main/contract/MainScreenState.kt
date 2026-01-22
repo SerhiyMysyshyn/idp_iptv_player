@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.main.contract
 
 data class MainScreenState(
     val isLoading: Boolean = true,

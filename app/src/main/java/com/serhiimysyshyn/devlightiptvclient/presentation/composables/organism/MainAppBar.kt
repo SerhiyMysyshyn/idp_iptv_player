@@ -27,7 +27,8 @@ fun MainAppBar(
         title = {
             Text(
                 text = title,
-                style = IPTVClientTheme.typography.h2
+                style = IPTVClientTheme.typography.h2,
+                maxLines = 1
             )
         },
         colors = TopAppBarColors(

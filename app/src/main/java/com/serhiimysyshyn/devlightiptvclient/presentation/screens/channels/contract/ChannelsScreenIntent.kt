@@ -1,4 +1,4 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.channels.contract
 
 sealed class ChannelsScreenIntent {
 
@@ -6,4 +6,5 @@ sealed class ChannelsScreenIntent {
     data object LoadFavouritesChannelsFromDatabase : ChannelsScreenIntent()
     data class AddToFavourite(val channelId: Long) : ChannelsScreenIntent()
     data class RemoveFromFavourite(val channelId: Long) : ChannelsScreenIntent()
+    data class Search(val query: String) : ChannelsScreenIntent()
 }

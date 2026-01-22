@@ -1,7 +1,7 @@
-package com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.intent
+package com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract
 
 import com.serhiimysyshyn.devlightiptvclient.presentation.base.BaseScreenReducer
-import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.PlaylistsScreenState
+import com.serhiimysyshyn.devlightiptvclient.presentation.screens.playlists.contract.PlaylistsScreenState
 
 class PlaylistsScreenReducer : BaseScreenReducer<PlaylistsScreenState, PlaylistsScreenEvent>() {
 
