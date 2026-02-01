@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("build-logic")
+    enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
     repositories {
         google {
             content {
@@ -16,8 +18,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
-rootProject.name = "Devlight IPTV Client"
+rootProject.name = "devlight-iptv-client"
+
 include(":app")
+include(":presentation")
+include(":data")
+include(":presentation-theme")
