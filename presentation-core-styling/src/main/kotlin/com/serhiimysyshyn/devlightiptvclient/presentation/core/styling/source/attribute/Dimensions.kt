@@ -33,6 +33,7 @@ internal val attributeSize = ThemeSize(
     iconS = 16.dp,
     iconM = 24.dp,
     iconL = 36.dp,
+    avatar = 44.dp,
     rowHeight = 42.dp,
     progressStroke = 4.dp,
 )

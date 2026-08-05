@@ -2,6 +2,7 @@ package com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen
 
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,23 +40,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.content.res.ResourcesCompat
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import androidx.compose.ui.viewinterop.AndroidView
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.core.Theme
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.ui.component.appbar.MainAppBar
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.ui.component.list.CustomListItemV1
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.AudioSettingsBottomSheet
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.PlayerGestureHud
-import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.isInPictureInPictureMode
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.PlayerGestureState
-import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.rememberPlayerGestureModifier
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.TrackSelectorBottomSheet
+import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.isInPictureInPictureMode
+import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.rememberPlayerGestureModifier
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.contract.PlayerScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.contract.PlayerScreenState
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.ui.R as CoreUiR
@@ -73,7 +73,6 @@ internal fun PlayerContent(
 ) {
     val unknownChannel = stringResource(CoreUiR.string.player_unknown_channel)
     val channelName = state.currentChannel?.name ?: unknownChannel
-
     // A PiP window is far too small for the app bar and the favourites list, so it reuses the
     // fullscreen layout: video only, on black.
     val isInPipMode = isInPictureInPictureMode()
@@ -198,6 +197,7 @@ internal fun PlayerContent(
  * [PlayerView.setFullscreenButtonClickListener] is attached, and media3 swaps the enter/exit
  * icon itself based on the flag passed back to the listener.
  */
+@OptIn(UnstableApi::class)
 @Composable
 private fun VideoSurface(
     exoPlayer: ExoPlayer,
@@ -219,6 +219,7 @@ private fun VideoSurface(
                     }
                 }
             },
+
             // Attaching the player in `update` rather than `factory` keeps the view usable
             // after the composable is reused with a different ExoPlayer instance.
             update = { view ->
@@ -366,8 +367,6 @@ private fun FavouriteChannels(
     onIntent: (PlayerScreenIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -389,11 +388,7 @@ private fun FavouriteChannels(
             ) { channel ->
                 CustomListItemV1(
                     title = channel.name,
-                    icon = ResourcesCompat.getDrawable(
-                        context.resources,
-                        CoreUiR.drawable.outline_media_link_24,
-                        context.theme,
-                    ),
+                    logoUrl = channel.logoUrl,
                     onItemClicked = { onIntent(PlayerScreenIntent.LoadChannel(channel.id)) },
                     functionalIcon = Icons.Default.Favorite,
                     onFunctionalIconClicked = {

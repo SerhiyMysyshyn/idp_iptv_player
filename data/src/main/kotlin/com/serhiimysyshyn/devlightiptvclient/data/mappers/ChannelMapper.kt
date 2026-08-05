@@ -10,6 +10,7 @@ internal fun ChannelEntity.toDomain() = Channel(
     name = name,
     url = url,
     category = category,
+    logoUrl = logoUrl,
     isFavorite = isFavorite,
     playlistId = playlistId,
 )
@@ -18,6 +19,7 @@ internal fun Channel.toEntity() = ChannelEntity(
     name = name,
     url = url,
     category = category,
+    logoUrl = logoUrl,
     isFavorite = isFavorite,
     playlistId = playlistId,
 )

@@ -31,6 +31,8 @@ data class ThemeSize(
     val iconS: Dp,
     val iconM: Dp,
     val iconL: Dp,
+    /** Leading square in a list row — channel logo or its generated stand-in. */
+    val avatar: Dp,
     val rowHeight: Dp,
     val progressStroke: Dp,
 )
