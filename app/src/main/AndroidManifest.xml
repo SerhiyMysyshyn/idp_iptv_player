@@ -22,7 +22,7 @@
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.DevlightIPTVClient">
+            android:theme="@style/Theme.DevlightIPTVClient.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

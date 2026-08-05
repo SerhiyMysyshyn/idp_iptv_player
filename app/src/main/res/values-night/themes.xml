@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Dark counterpart. Same window background token (it has its own `values-night` value); the
+      parent switches to the dark platform theme so system-drawn chrome — the window frame during
+      cold start, dialogs owned by the framework — isn't styled for a light background.
+    -->
+    <style name="Theme.DevlightIPTVClient" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+    </style>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Slate950 — matches background.primaryMain in the dark scheme. -->
+    <color name="splash_background">#0F1219</color>
+    <!-- Indigo400: Indigo600 is too dark to read as a mark on the dark splash background. -->
+    <color name="splash_icon_tint">#818CF8</color>
+</resources>

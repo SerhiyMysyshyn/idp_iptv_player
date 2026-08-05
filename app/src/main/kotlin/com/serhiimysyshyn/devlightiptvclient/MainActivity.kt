@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -39,6 +40,10 @@ class MainActivity : ComponentActivity() {
     private val shortcutDestinationBus = ShortcutDestinationBus()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Must run before super.onCreate: it swaps the launch theme for the post-splash one, and
+        // on API 31+ hands control of the system splash to the compat layer.
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
