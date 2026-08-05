@@ -37,7 +37,7 @@ internal fun SettingsRowItem(
             .wrapContentHeight()
             .fillMaxWidth()
             .padding(horizontal = Theme.spacing.m, vertical = Theme.spacing.s),
-        shape = RoundedCornerShape(Theme.radius.m),
+        shape = RoundedCornerShape(Theme.radius.l),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colors.semantic.background.primaryContent,
             contentColor = Theme.colors.semantic.foreground.primary,

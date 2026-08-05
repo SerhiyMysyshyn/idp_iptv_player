@@ -372,7 +372,7 @@ private fun FavouriteChannels(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = Theme.spacing.m),
-        shape = RoundedCornerShape(Theme.radius.m),
+        shape = RoundedCornerShape(Theme.radius.l),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colors.semantic.background.secondaryMain,
             contentColor = Theme.colors.semantic.foreground.primary,

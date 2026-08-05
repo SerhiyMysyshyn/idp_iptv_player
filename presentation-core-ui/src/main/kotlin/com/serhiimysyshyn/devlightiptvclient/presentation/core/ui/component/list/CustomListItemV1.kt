@@ -53,7 +53,7 @@ fun CustomListItemV1(
         modifier = modifier
             .wrapContentHeight()
             .fillMaxWidth(),
-        shape = RoundedCornerShape(Theme.radius.m),
+        shape = RoundedCornerShape(Theme.radius.l),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colors.semantic.background.primaryContent,
             contentColor = Theme.colors.semantic.foreground.primary,

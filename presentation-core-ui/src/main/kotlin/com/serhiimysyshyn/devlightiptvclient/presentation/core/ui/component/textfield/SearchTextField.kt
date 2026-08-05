@@ -39,7 +39,7 @@ fun SearchTextField(
                 end = Theme.spacing.m,
             ),
         singleLine = true,
-        shape = RoundedCornerShape(Theme.radius.m),
+        shape = RoundedCornerShape(Theme.radius.l),
         colors = TextFieldDefaults.colors(
             focusedTextColor = Theme.colors.semantic.text.primary,
             unfocusedTextColor = Theme.colors.semantic.text.primary,
