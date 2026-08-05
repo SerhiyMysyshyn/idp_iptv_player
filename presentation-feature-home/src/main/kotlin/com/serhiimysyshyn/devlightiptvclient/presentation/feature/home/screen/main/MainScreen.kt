@@ -9,7 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.core.ext.navigateSafe
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.core.provider.LocalAppNavController
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.LaunchMode
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.LocalShortcutDestinationBus
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.NavigationRoute
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.ShortcutDestination
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.home.screen.main.contract.MainScreenEffect
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.home.screen.main.contract.MainScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.home.screen.main.model.MainMenuItemId
@@ -35,6 +37,19 @@ fun MainScreen(modifier: Modifier = Modifier) {
             when (effect) {
                 is MainScreenEffect.LaunchNewScreen -> mainNavController.navigateSafe(effect.route)
                 is MainScreenEffect.LaunchNewRootScreen -> rootNavController.navigateSafe(effect.route)
+            }
+        }
+    }
+
+    // A launcher shortcut lands on this screen, then jumps to the tab it asked for. Routed through
+    // the same handler as a drawer tap so the drawer selection stays in sync.
+    val shortcutDestinationBus = LocalShortcutDestinationBus.current
+
+    LaunchedEffect(shortcutDestinationBus, viewModel) {
+        shortcutDestinationBus?.destinations?.collect { destination ->
+            when (destination) {
+                ShortcutDestination.FAVOURITES ->
+                    viewModel.onMenuItemClicked(MainMenuItemId.FAVOURITES)
             }
         }
     }

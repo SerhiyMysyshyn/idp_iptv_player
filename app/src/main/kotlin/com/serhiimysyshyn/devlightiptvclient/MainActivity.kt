@@ -1,5 +1,6 @@
 package com.serhiimysyshyn.devlightiptvclient
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,9 @@ import com.serhiimysyshyn.devlightiptvclient.domain.model.AppThemeType
 import com.serhiimysyshyn.devlightiptvclient.domain.repository.ThemeRepository
 import com.serhiimysyshyn.devlightiptvclient.navigation.AppNavHost
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.core.provider.LocalAppNavController
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.LocalShortcutDestinationBus
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.ShortcutDestination
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.ShortcutDestinationBus
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.LocalUserLeaveHintOwner
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.UserLeaveHintDispatcher
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.source.theme.AppTheme
@@ -32,9 +36,13 @@ class MainActivity : ComponentActivity() {
      */
     private val userLeaveHintDispatcher = UserLeaveHintDispatcher()
 
+    private val shortcutDestinationBus = ShortcutDestinationBus()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        publishShortcutDestination(intent)
 
         setContent {
             val themeType by themeRepository.getTheme()
@@ -46,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalAppNavController provides navController,
                     LocalUserLeaveHintOwner provides userLeaveHintDispatcher,
+                    LocalShortcutDestinationBus provides shortcutDestinationBus,
                 ) {
                     AppNavHost(navController = navController)
                 }
@@ -53,9 +62,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** The activity is `singleTask`, so a shortcut tap on a running app lands here, not in onCreate. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        publishShortcutDestination(intent)
+    }
+
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         userLeaveHintDispatcher.dispatchUserLeaveHint()
+    }
+
+    private fun publishShortcutDestination(intent: Intent?) {
+        val extra = intent?.getStringExtra(ShortcutDestination.INTENT_EXTRA)
+
+        ShortcutDestination.fromValue(extra)?.let(shortcutDestinationBus::emit)
     }
 }
 
