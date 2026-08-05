@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">IPTV Player</string>
+
+    <!-- Navigation / menu -->
+    <string name="play_lists_str">Плейлисти</string>
+    <string name="channels_str">Канали</string>
+    <string name="licked_channels_str">Улюблені канали</string>
+    <string name="settings_str">Налаштування</string>
+    <string name="open_menu">Відкрити меню</string>
+    <string name="navigate_back">Назад</string>
+
+    <!-- Empty and error states -->
+    <string name="playlists_empty">Список плейлистів порожній</string>
+    <string name="channels_empty">Список каналів порожній</string>
+    <string name="fetching_playlists_error">Сталась помилка під час завантаження плейлистів</string>
+    <string name="fetching_channels_error">Сталась помилка під час завантаження каналів</string>
+
+    <!-- Favourites -->
+    <string name="channel_licked">Додано в Улюблені</string>
+    <string name="channel_not_licked">Додати в Улюблені</string>
+
+    <!-- Common actions -->
+    <string name="action_close">Закрити</string>
+    <string name="action_done">Готово</string>
+    <string name="search_hint">Пошук</string>
+
+    <!-- Theme -->
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_system">Системна</string>
+    <string name="settings_app_theme">Поточна тема додатку</string>
+    <string name="settings_app_colors">Кольорова гама додатку</string>
+    <string name="settings_select_theme">Виберіть тему</string>
+    <string name="settings_color_palette">Кольорова палітра додатку</string>
+
+    <!-- Playlists -->
+    <string name="add_playlist_title">Введіть посилання для завантаження .M3U плейлиста</string>
+    <string name="add_playlist_hint">URL для завантаження</string>
+
+    <!-- Player -->
+    <string name="player_select_preset">Виберіть пресет</string>
+    <string name="player_unknown_channel">Невідомий канал</string>
+    <string name="player_stream_title">Відеопотік: %1$s</string>
+    <string name="player_add_to_favourites">Додати в улюблені канали</string>
+    <string name="player_in_favourites">Додано в улюблені канали</string>
+    <string name="player_equalizer">Еквалайзер: %1$s</string>
+</resources>

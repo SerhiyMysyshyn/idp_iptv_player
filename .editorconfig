@@ -1,0 +1,37 @@
+# https://editorconfig.org/
+# Consumed by ktlint (and by the IDE), so formatting rules live here rather than in Gradle.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+
+indent_size = 4
+continuation_indent_size = 4
+insert_final_newline = true
+
+# Trailing commas keep diffs to one line when a parameter is added.
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# Composables are PascalCase.
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+# Line length is enforced by detekt (style>MaxLineLength) so it is reported in one place.
+ktlint_standard_max-line-length = disabled
+# A file may hold several small related declarations (e.g. all the Theme* dimension tokens).
+ktlint_standard_filename = disabled
+# Conflicts with the token-object style used in presentation-core-styling.
+ktlint_standard_property-naming = disabled
+
+[*.{xml,yml,yaml,json}]
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false

@@ -1,0 +1,124 @@
+# Detekt configuration — shared by every module via the `devlight.quality` convention plugin.
+# Applied on top of detekt's default ruleset (buildUponDefaultConfig = true).
+# Reference: https://detekt.dev/docs/introduction/configurations
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+  weights:
+    complexity: 2
+    LongParameterList: 1
+    style: 1
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+  exclude:
+    - 'ProjectComplexityReport'
+    - 'ProjectCoverageReport'
+    - 'ProjectLOCReport'
+    - 'NotificationReport'
+
+comments:
+  active: true
+  # Was enabled in the original config, but that config never actually ran (it was invalid for
+  # detekt 1.23). Turning it on now would forbid explaining *why* a private helper exists, which
+  # is exactly where a comment earns its keep.
+  CommentOverPrivateFunction:
+    active: false
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+
+complexity:
+  active: true
+  ComplexInterface:
+    active: true
+    # Repository contracts group CRUD for one aggregate; the default of 10 is too tight for them.
+    threshold: 15
+  LargeClass:
+    active: true
+    threshold: 500
+  LongMethod:
+    active: true
+    threshold: 60
+    # A composable is a declarative tree, not a procedure — line count says little about its
+    # complexity, and splitting one purely to satisfy a counter adds indirection, not clarity.
+    ignoreAnnotated: [ 'Composable' ]
+  LongParameterList:
+    active: true
+    functionThreshold: 7
+    constructorThreshold: 8
+    ignoreDefaultParameters: true
+    # Compose screens legitimately take many lambdas; the state-hoisting pattern requires it.
+    ignoreAnnotated: [ 'Composable' ]
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 20
+    thresholdInClasses: 20
+    thresholdInInterfaces: 20
+    thresholdInObjects: 20
+    thresholdInEnums: 20
+    ignorePrivate: true
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    # Composables are PascalCase by convention.
+    ignoreAnnotated: [ 'Composable' ]
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][A-Za-z0-9]*'
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    # Also allows PascalCase, which the Compose convention requires for CompositionLocals
+    # (`LocalAppNavController`, `LocalThemeColors`).
+    propertyPattern: '[a-zA-Z][A-Za-z0-9]*'
+
+performance:
+  active: true
+  ForEachOnRange:
+    active: true
+  SpreadOperator:
+    active: true
+
+potential-bugs:
+  active: true
+  UnsafeCallOnNullableType:
+    active: true
+  UnreachableCode:
+    active: true
+
+style:
+  active: true
+  MagicNumber:
+    active: false
+  DataClassContainsFunctions:
+    active: true
+  OptionalUnit:
+    active: true
+  NewLineAtEndOfFile:
+    active: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+  ReturnCount:
+    active: true
+    max: 3
+  UnusedPrivateMember:
+    active: true
+    # Compose previews are invoked by the tooling, never from code.
+    ignoreAnnotated: [ 'Preview', 'DevicePreviews' ]
