@@ -21,6 +21,10 @@ class SettingsScreenReducer : BaseScreenReducer<SettingsScreenState, SettingsScr
             currentAppTheme = event.appTheme,
         )
 
+        is SettingsScreenEvent.PictureInPictureEnabledLoaded -> currentState.copy(
+            isPictureInPictureEnabled = event.isEnabled,
+        )
+
         is SettingsScreenEvent.Error -> currentState.copy(
             isLoading = false,
             isError = true,

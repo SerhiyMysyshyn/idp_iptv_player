@@ -10,6 +10,8 @@ data class Channel(
     val name: String,
     val url: String,
     val category: String,
+    /** `tvg-logo` from the playlist; empty when the channel shipped none. */
+    val logoUrl: String = "",
     val isFavorite: Boolean = false,
     val playlistId: Long = 0L,
 )

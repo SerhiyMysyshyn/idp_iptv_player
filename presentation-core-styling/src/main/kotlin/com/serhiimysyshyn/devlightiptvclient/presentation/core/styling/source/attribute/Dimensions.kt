@@ -15,11 +15,17 @@ internal val attributeSpacing = ThemeSpacing(
     xxl = 48.dp,
 )
 
+/**
+ * Softer than before: cards move from 8dp to 16dp and dialogs/sheets to 28dp.
+ *
+ * The ramp is now an even progression (6/10/16/28) instead of the previous 4/8/16/36, where the
+ * jump to `xl` was large enough that a dialog and a card next to each other looked unrelated.
+ */
 internal val attributeRadius = ThemeRadius(
-    s = 4.dp,
-    m = 8.dp,
+    s = 6.dp,
+    m = 10.dp,
     l = 16.dp,
-    xl = 36.dp,
+    xl = 28.dp,
     full = 1000.dp,
 )
 
@@ -27,6 +33,7 @@ internal val attributeSize = ThemeSize(
     iconS = 16.dp,
     iconM = 24.dp,
     iconL = 36.dp,
+    avatar = 44.dp,
     rowHeight = 42.dp,
     progressStroke = 4.dp,
 )

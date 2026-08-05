@@ -14,5 +14,7 @@ sealed interface SettingsScreenEvent {
 
     data class AppThemeLoaded(val appTheme: AppThemeType) : SettingsScreenEvent
 
+    data class PictureInPictureEnabledLoaded(val isEnabled: Boolean) : SettingsScreenEvent
+
     data object Error : SettingsScreenEvent
 }

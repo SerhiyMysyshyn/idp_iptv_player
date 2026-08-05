@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Splash colours, mirrored from the Compose palette in `presentation-core-styling`.
+
+  They have to be duplicated as Android resources because the splash window is drawn by the system
+  before any Compose code runs — `Theme.colors` does not exist yet at that point. Keep these in
+  step with `Colors.Slate50` / `Colors.Slate950` if the palette moves.
+-->
+<resources>
+    <!-- Slate50 — matches background.primaryMain in the light scheme. -->
+    <color name="splash_background">#F7F8FB</color>
+    <!-- Indigo600 — the brand accent, identical in both schemes. -->
+    <color name="splash_icon_tint">#4F46E5</color>
+</resources>

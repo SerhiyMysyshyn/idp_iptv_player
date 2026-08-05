@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">IPTV Player</string>
+
+    <!-- Launcher long-press shortcuts. Short label is what fits under the icon. -->
+    <string name="shortcut_favourites_short">Улюблені</string>
+    <string name="shortcut_favourites_long">Улюблені канали</string>
 </resources>

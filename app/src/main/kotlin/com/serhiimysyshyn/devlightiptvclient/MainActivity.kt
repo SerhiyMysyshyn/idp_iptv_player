@@ -1,9 +1,11 @@
 package com.serhiimysyshyn.devlightiptvclient
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -14,6 +16,11 @@ import com.serhiimysyshyn.devlightiptvclient.domain.model.AppThemeType
 import com.serhiimysyshyn.devlightiptvclient.domain.repository.ThemeRepository
 import com.serhiimysyshyn.devlightiptvclient.navigation.AppNavHost
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.core.provider.LocalAppNavController
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.LocalShortcutDestinationBus
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.ShortcutDestination
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.source.ShortcutDestinationBus
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.LocalUserLeaveHintOwner
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.UserLeaveHintDispatcher
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.source.theme.AppTheme
 import org.koin.android.ext.android.inject
 
@@ -24,9 +31,23 @@ class MainActivity : ComponentActivity() {
 
     private val themeRepository: ThemeRepository by inject()
 
+    /**
+     * `ComponentActivity` does not implement `OnUserLeaveHintProvider`, so the callback is
+     * forwarded manually to whichever screen cares (currently the player, for Picture-in-Picture).
+     */
+    private val userLeaveHintDispatcher = UserLeaveHintDispatcher()
+
+    private val shortcutDestinationBus = ShortcutDestinationBus()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Must run before super.onCreate: it swaps the launch theme for the post-splash one, and
+        // on API 31+ hands control of the system splash to the compat layer.
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        publishShortcutDestination(intent)
 
         setContent {
             val themeType by themeRepository.getTheme()
@@ -35,11 +56,33 @@ class MainActivity : ComponentActivity() {
             AppTheme(useDarkTheme = themeType.isDarkTheme()) {
                 val navController = rememberNavController()
 
-                CompositionLocalProvider(LocalAppNavController provides navController) {
+                CompositionLocalProvider(
+                    LocalAppNavController provides navController,
+                    LocalUserLeaveHintOwner provides userLeaveHintDispatcher,
+                    LocalShortcutDestinationBus provides shortcutDestinationBus,
+                ) {
                     AppNavHost(navController = navController)
                 }
             }
         }
+    }
+
+    /** The activity is `singleTask`, so a shortcut tap on a running app lands here, not in onCreate. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        publishShortcutDestination(intent)
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        userLeaveHintDispatcher.dispatchUserLeaveHint()
+    }
+
+    private fun publishShortcutDestination(intent: Intent?) {
+        val extra = intent?.getStringExtra(ShortcutDestination.INTENT_EXTRA)
+
+        ShortcutDestination.fromValue(extra)?.let(shortcutDestinationBus::emit)
     }
 }
 

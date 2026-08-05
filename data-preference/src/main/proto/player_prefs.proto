@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.serhiimysyshyn.devlightiptvclient.data.preference.datastore";
+option java_multiple_files = true;
+
+message PlayerPreferences {
+    // Inverted on purpose: proto3 bools default to false, and Picture-in-Picture should be on
+    // for a fresh install, so the stored flag records the opt-OUT.
+    bool picture_in_picture_disabled = 1;
+}

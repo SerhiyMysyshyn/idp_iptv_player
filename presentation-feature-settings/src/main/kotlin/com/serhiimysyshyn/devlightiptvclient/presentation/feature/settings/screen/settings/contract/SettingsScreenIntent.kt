@@ -13,4 +13,6 @@ sealed interface SettingsScreenIntent {
     data object HideChangeThemeDialog : SettingsScreenIntent
 
     data class UpdateAppTheme(val appThemeType: AppThemeType) : SettingsScreenIntent
+
+    data class UpdatePictureInPictureEnabled(val isEnabled: Boolean) : SettingsScreenIntent
 }

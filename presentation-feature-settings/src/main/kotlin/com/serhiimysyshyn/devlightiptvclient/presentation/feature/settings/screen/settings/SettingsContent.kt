@@ -18,6 +18,7 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.core.ui.component.appb
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.component.AppColorsDialog
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.component.SelectThemeDialog
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.component.SettingsRowItem
+import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.component.SettingsSwitchItem
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.component.label
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.contract.SettingsScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings.contract.SettingsScreenState
@@ -61,6 +62,15 @@ internal fun SettingsContent(
                 title = stringResource(CoreUiR.string.settings_app_theme),
                 value = state.currentAppTheme.label(),
                 onItemClicked = { onIntent(SettingsScreenIntent.ShowChangeThemeDialog) },
+            )
+
+            SettingsSwitchItem(
+                title = stringResource(CoreUiR.string.settings_picture_in_picture),
+                description = stringResource(CoreUiR.string.settings_picture_in_picture_hint),
+                isChecked = state.isPictureInPictureEnabled,
+                onCheckedChange = { isEnabled ->
+                    onIntent(SettingsScreenIntent.UpdatePictureInPictureEnabled(isEnabled))
+                },
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.feature.settings.screen.settings
 
 import com.serhiimysyshyn.devlightiptvclient.domain.model.AppThemeType
+import com.serhiimysyshyn.devlightiptvclient.domain.repository.PlayerPreferencesRepository
 import com.serhiimysyshyn.devlightiptvclient.domain.repository.ThemeRepository
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.base.viewmodel.BaseViewModel
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.ext.safeLaunch
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class SettingsViewModel(
     private val themeRepository: ThemeRepository,
+    private val playerPreferencesRepository: PlayerPreferencesRepository,
     private val reducer: SettingsScreenReducer,
 ) : BaseViewModel<SettingsScreenIntent>() {
 
@@ -22,6 +24,7 @@ class SettingsViewModel(
 
     init {
         observeAppTheme()
+        observePictureInPicture()
     }
 
     override fun processIntent(intent: SettingsScreenIntent) {
@@ -31,6 +34,8 @@ class SettingsViewModel(
             is SettingsScreenIntent.ShowChangeThemeDialog -> emit(SettingsScreenEvent.ShowAppThemeDialog)
             is SettingsScreenIntent.HideChangeThemeDialog -> emit(SettingsScreenEvent.HideAppThemeDialog)
             is SettingsScreenIntent.UpdateAppTheme -> updateAppTheme(intent.appThemeType)
+            is SettingsScreenIntent.UpdatePictureInPictureEnabled ->
+                updatePictureInPictureEnabled(intent.isEnabled)
         }
     }
 
@@ -49,6 +54,21 @@ class SettingsViewModel(
     private fun updateAppTheme(appThemeType: AppThemeType) {
         safeLaunch(onError = { emit(SettingsScreenEvent.Error) }) {
             themeRepository.updateTheme(appThemeType)
+        }
+    }
+
+    private fun observePictureInPicture() {
+        safeLaunch(onError = { emit(SettingsScreenEvent.Error) }) {
+            playerPreferencesRepository.isPictureInPictureEnabled().collect { isEnabled ->
+                emit(SettingsScreenEvent.PictureInPictureEnabledLoaded(isEnabled))
+            }
+        }
+    }
+
+    /** Write-only, for the same reason as [updateAppTheme]. */
+    private fun updatePictureInPictureEnabled(isEnabled: Boolean) {
+        safeLaunch(onError = { emit(SettingsScreenEvent.Error) }) {
+            playerPreferencesRepository.updatePictureInPictureEnabled(isEnabled)
         }
     }
 

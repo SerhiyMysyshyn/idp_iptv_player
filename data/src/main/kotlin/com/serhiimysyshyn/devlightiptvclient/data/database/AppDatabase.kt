@@ -9,7 +9,7 @@ import com.serhiimysyshyn.devlightiptvclient.data.database.entities.PlaylistEnti
 
 @Database(
     entities = [PlaylistEntity::class, ChannelEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

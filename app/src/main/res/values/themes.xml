@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.DevlightIPTVClient" parent="android:Theme.Material.Light.NoActionBar" />
+    <!--
+      The app theme only matters for the window frame — everything inside is Compose.
+
+      `windowBackground` is what the system paints before the first Compose frame. It resolves to
+      `@color/splash_background`, which has a `values-night` variant, so the cold-start frame
+      follows the system theme instead of always flashing white as it did before.
+
+      Parent stays the platform Material theme (no AppCompat in this project); the day/night split
+      comes from the colour resource rather than from a DayNight parent.
+    -->
+    <style name="Theme.DevlightIPTVClient" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/splash_background</item>
+    </style>
+
+    <!--
+      Launch theme. `postSplashScreenTheme` is the theme the activity switches to once the splash
+      finishes — the swap happens inside installSplashScreen().
+    -->
+    <style name="Theme.DevlightIPTVClient.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.DevlightIPTVClient</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">
+            @color/splash_background
+        </item>
+    </style>
 </resources>

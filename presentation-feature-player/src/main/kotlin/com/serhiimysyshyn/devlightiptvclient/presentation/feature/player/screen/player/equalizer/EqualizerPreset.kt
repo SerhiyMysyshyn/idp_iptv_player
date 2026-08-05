@@ -10,4 +10,10 @@ enum class EqualizerPreset {
     JAZZ,
     CLASSICAL,
     DANCE,
+
+    /**
+     * Not a curve of its own — the state the equalizer falls into once the user drags a band
+     * slider, so the UI can stop claiming a named preset is active.
+     */
+    CUSTOM,
 }

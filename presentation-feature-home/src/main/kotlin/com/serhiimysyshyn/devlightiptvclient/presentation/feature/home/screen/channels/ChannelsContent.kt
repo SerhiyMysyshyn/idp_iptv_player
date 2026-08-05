@@ -16,9 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.res.ResourcesCompat
 import com.serhiimysyshyn.devlightiptvclient.domain.model.Channel
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.preview.DevicePreviews
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.core.Theme
@@ -71,8 +69,6 @@ private fun ChannelsList(
     onIntent: (ChannelsScreenIntent) -> Unit,
     onChannelClicked: (Channel) -> Unit,
 ) {
-    val context = LocalContext.current
-
     Column(modifier = Modifier.fillMaxSize()) {
         SearchTextField(
             value = state.query,
@@ -97,11 +93,8 @@ private fun ChannelsList(
             ) { channel ->
                 CustomListItemV1(
                     title = channel.name,
-                    icon = ResourcesCompat.getDrawable(
-                        context.resources,
-                        CoreUiR.drawable.outline_media_link_24,
-                        context.theme,
-                    ),
+                    description = channel.category,
+                    logoUrl = channel.logoUrl,
                     onItemClicked = { onChannelClicked(channel) },
                     functionalIcon = if (channel.isFavorite) {
                         Icons.Default.Favorite

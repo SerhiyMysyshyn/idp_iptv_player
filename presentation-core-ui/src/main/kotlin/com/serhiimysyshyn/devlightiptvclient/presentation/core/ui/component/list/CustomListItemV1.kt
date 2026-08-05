@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.preview.DevicePreviews
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.ui.component.avatar.ChannelAvatar
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.core.Theme
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.source.theme.AppTheme
 
@@ -35,6 +36,9 @@ import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.source.th
  *
  * Used for both playlists and channels.
  *
+ * @param icon leading drawable, for rows that aren't channels (playlists, menu entries).
+ * @param logoUrl when non-null the leading slot becomes a [ChannelAvatar] instead — an empty
+ *   string is still valid and renders the generated initial.
  * @param functionalIcon trailing icon; when null the trailing slot is omitted entirely.
  */
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -45,6 +49,7 @@ fun CustomListItemV1(
     modifier: Modifier = Modifier,
     description: String = "",
     icon: Drawable? = null,
+    logoUrl: String? = null,
     functionalIcon: ImageVector? = null,
     onFunctionalIconClicked: () -> Unit = {},
 ) {
@@ -53,7 +58,7 @@ fun CustomListItemV1(
         modifier = modifier
             .wrapContentHeight()
             .fillMaxWidth(),
-        shape = RoundedCornerShape(Theme.radius.m),
+        shape = RoundedCornerShape(Theme.radius.l),
         colors = CardDefaults.cardColors(
             containerColor = Theme.colors.semantic.background.primaryContent,
             contentColor = Theme.colors.semantic.foreground.primary,
@@ -65,15 +70,27 @@ fun CustomListItemV1(
                 .fillMaxWidth()
                 .padding(Theme.spacing.m),
         ) {
-            if (icon != null) {
-                GlideImage(
-                    model = icon,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(Theme.colors.semantic.foreground.primary),
-                    modifier = Modifier.size(Theme.size.iconL),
-                )
+            when {
+                logoUrl != null -> {
+                    ChannelAvatar(
+                        name = title,
+                        logoUrl = logoUrl,
+                        size = Theme.size.avatar,
+                    )
 
-                Spacer(Modifier.width(Theme.spacing.m))
+                    Spacer(Modifier.width(Theme.spacing.m))
+                }
+
+                icon != null -> {
+                    GlideImage(
+                        model = icon,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(Theme.colors.semantic.foreground.primary),
+                        modifier = Modifier.size(Theme.size.iconL),
+                    )
+
+                    Spacer(Modifier.width(Theme.spacing.m))
+                }
             }
 
             Column(modifier = Modifier.weight(1f)) {
