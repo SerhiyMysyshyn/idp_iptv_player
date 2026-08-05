@@ -27,6 +27,7 @@ data class EqualizerBand(
  *   prepared a media item, so capturing the value at construction time would always give
  *   [C.AUDIO_SESSION_ID_UNSET].
  */
+@UnstableApi
 class PlayerEqualizer(
     private val audioSessionIdProvider: () -> Int,
 ) {
@@ -131,6 +132,7 @@ class PlayerEqualizer(
         runCatching { effect.setStrength(strength.coerceIn(NO_STRENGTH, MAX_STRENGTH)) }
     }
 
+    @OptIn(UnstableApi::class)
     fun release() {
         equalizer?.release()
         bassBoost?.release()

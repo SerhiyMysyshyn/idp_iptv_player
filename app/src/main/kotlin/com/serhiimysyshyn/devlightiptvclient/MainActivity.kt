@@ -14,6 +14,8 @@ import com.serhiimysyshyn.devlightiptvclient.domain.model.AppThemeType
 import com.serhiimysyshyn.devlightiptvclient.domain.repository.ThemeRepository
 import com.serhiimysyshyn.devlightiptvclient.navigation.AppNavHost
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.navigation.core.provider.LocalAppNavController
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.LocalUserLeaveHintOwner
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.UserLeaveHintDispatcher
 import com.serhiimysyshyn.devlightiptvclient.presentation.core.styling.source.theme.AppTheme
 import org.koin.android.ext.android.inject
 
@@ -23,6 +25,12 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
 
     private val themeRepository: ThemeRepository by inject()
+
+    /**
+     * `ComponentActivity` does not implement `OnUserLeaveHintProvider`, so the callback is
+     * forwarded manually to whichever screen cares (currently the player, for Picture-in-Picture).
+     */
+    private val userLeaveHintDispatcher = UserLeaveHintDispatcher()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,11 +43,19 @@ class MainActivity : ComponentActivity() {
             AppTheme(useDarkTheme = themeType.isDarkTheme()) {
                 val navController = rememberNavController()
 
-                CompositionLocalProvider(LocalAppNavController provides navController) {
+                CompositionLocalProvider(
+                    LocalAppNavController provides navController,
+                    LocalUserLeaveHintOwner provides userLeaveHintDispatcher,
+                ) {
                     AppNavHost(navController = navController)
                 }
             }
         }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        userLeaveHintDispatcher.dispatchUserLeaveHint()
     }
 }
 

@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Rational
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -14,9 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.serhiimysyshyn.devlightiptvclient.presentation.core.platform.core.pip.LocalUserLeaveHintOwner
 
 /** Widest and narrowest aspect ratios Android accepts for a PiP window. */
 private val MIN_ASPECT_RATIO = Rational(100, 239)
@@ -52,9 +53,9 @@ internal fun isInPictureInPictureMode(): Boolean {
 /**
  * Enters Picture-in-Picture when the user leaves the app while a stream is playing.
  *
- * `ON_PAUSE` stands in for `onUserLeaveHint`: a Composable can't override the activity callback,
- * and pause fires on the same home/recents gesture. The [enabled] guard is what keeps it from
- * triggering on an in-app navigation away from the player.
+ * Driven by `onUserLeaveHint`, which fires only on home/recents. An earlier version listened for
+ * `ON_PAUSE` instead — but pause also fires when the player is popped off the back stack, so
+ * pressing back entered PiP instead of closing the screen.
  */
 @Composable
 internal fun PictureInPictureEffect(
@@ -63,27 +64,45 @@ internal fun PictureInPictureEffect(
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivityOrNull() }
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val userLeaveHintOwner = LocalUserLeaveHintOwner.current
 
-    if (activity == null || !activity.supportsPictureInPicture()) return
+    if (activity == null || userLeaveHintOwner == null) return
+    // Inline rather than folded into supportsPictureInPicture(): lint only narrows the API level
+    // for a version check it can see at the call site.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+    if (!activity.supportsPictureInPicture()) return
 
-    DisposableEffect(lifecycleOwner, enabled, videoAspectRatio) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event != Lifecycle.Event.ON_PAUSE || !enabled) return@LifecycleEventObserver
-            if (activity.isInPictureInPictureMode) return@LifecycleEventObserver
+    DisposableEffect(userLeaveHintOwner, enabled, videoAspectRatio) {
+        val listener: () -> Unit = {
+            // isFinishing guards the case where the user hits back and home in quick succession:
+            // the screen is already going away, so a PiP window would outlive its own player.
+            val canEnter = enabled &&
+                !activity.isInPictureInPictureMode &&
+                !activity.isFinishing
 
-            val params = PictureInPictureParams.Builder()
-                .apply { videoAspectRatio?.clampToPipRange()?.let(::setAspectRatio) }
-                .build()
-
-            // The system rejects the request when PiP is disabled device-wide or the activity is
-            // already finishing; playback simply continues in the background in that case.
-            runCatching { activity.enterPictureInPictureMode(params) }
+            if (canEnter) {
+                activity.enterPictureInPicture(videoAspectRatio)
+            }
         }
 
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+        userLeaveHintOwner.addOnUserLeaveHintListener(listener)
+        onDispose { userLeaveHintOwner.removeOnUserLeaveHintListener(listener) }
     }
+}
+
+/**
+ * The API-26 entry point, isolated behind [RequiresApi] so the version check is one lint can
+ * follow — an `SDK_INT` test hidden inside a helper predicate is not.
+ */
+@RequiresApi(Build.VERSION_CODES.O)
+private fun Activity.enterPictureInPicture(videoAspectRatio: Rational?) {
+    val params = PictureInPictureParams.Builder()
+        .apply { videoAspectRatio?.clampToPipRange()?.let(::setAspectRatio) }
+        .build()
+
+    // The system rejects the request when PiP is disabled device-wide; playback simply continues
+    // in the background in that case.
+    runCatching { enterPictureInPictureMode(params) }
 }
 
 /** Android throws if the ratio falls outside its supported band, so clamp instead of trusting it. */
@@ -97,9 +116,9 @@ private fun Rational.clampToPipRange(): Rational? {
     }
 }
 
+/** Tablets and TV boxes without the PiP feature exist even on new Android versions. */
 private fun Activity.supportsPictureInPicture(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-        packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+    packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
 private tailrec fun Context.findActivityOrNull(): Activity? = when (this) {
     is Activity -> this

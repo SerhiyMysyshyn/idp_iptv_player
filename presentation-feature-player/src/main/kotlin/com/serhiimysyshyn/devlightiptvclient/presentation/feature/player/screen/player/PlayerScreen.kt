@@ -6,6 +6,7 @@ import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
 import android.util.Rational
 import androidx.activity.compose.BackHandler
+import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +25,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.component.PictureInPictureEffect
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.contract.PlayerScreenIntent
@@ -39,6 +41,9 @@ import org.koin.androidx.compose.koinViewModel
  * The player is created here rather than inside the content composable so that [PlayerContent]
  * stays a pure function of state — it only receives the already-built player to attach to a view.
  */
+// PlayerEqualizer wraps media3's still-unstable audio-session API; the opt-in stops at this
+// screen rather than leaking to callers.
+@OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(
     onNavigateBack: () -> Unit,
