@@ -32,16 +32,34 @@
     <string name="settings_app_colors">Кольорова гама додатку</string>
     <string name="settings_select_theme">Виберіть тему</string>
     <string name="settings_color_palette">Кольорова палітра додатку</string>
+    <string name="settings_picture_in_picture">Картинка в картинці</string>
+    <string name="settings_picture_in_picture_hint">Продовжувати відтворення у маленькому вікні, коли ви згортаєте додаток</string>
 
     <!-- Playlists -->
     <string name="add_playlist_title">Введіть посилання для завантаження .M3U плейлиста</string>
     <string name="add_playlist_hint">URL для завантаження</string>
 
     <!-- Player -->
-    <string name="player_select_preset">Виберіть пресет</string>
     <string name="player_unknown_channel">Невідомий канал</string>
     <string name="player_stream_title">Відеопотік: %1$s</string>
     <string name="player_add_to_favourites">Додати в улюблені канали</string>
     <string name="player_in_favourites">Додано в улюблені канали</string>
     <string name="player_equalizer">Еквалайзер: %1$s</string>
+    <string name="player_audio_settings">Налаштування звуку</string>
+    <string name="player_audio_presets">Пресети</string>
+    <string name="player_audio_bands">Смуги частот</string>
+    <string name="player_audio_bass_boost">Підсилення басів</string>
+    <string name="player_audio_virtualizer">Об\'ємний звук</string>
+    <string name="player_audio_reset">Скинути</string>
+    <string name="player_audio_unavailable">Пристрій не надав доступу до аудіоефектів для цього потоку</string>
+    <!-- Band frequency labels, e.g. "60 Hz" / "3.6 kHz" -->
+    <string name="player_audio_band_hz">%1$d Hz</string>
+    <string name="player_audio_band_khz">%1$s kHz</string>
+    <string name="player_audio_band_level">%1$+d dB</string>
+    <string name="player_playback_error">Не вдалося відтворити потік</string>
+    <string name="player_retry">Спробувати ще раз</string>
+    <string name="player_tracks">Доріжки</string>
+    <string name="player_tracks_audio">Аудіо</string>
+    <string name="player_tracks_subtitles">Субтитри</string>
+    <string name="player_tracks_empty">Потік не має додаткових доріжок</string>
 </resources>

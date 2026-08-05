@@ -1,12 +1,27 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.equalizer
 
+import android.media.audiofx.BassBoost
 import android.media.audiofx.Equalizer
+import android.media.audiofx.Virtualizer
 import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
 
 /**
- * Wraps the platform [Equalizer] and applies the band curve of the selected [EqualizerPreset].
+ * Describes one equalizer band as the UI needs it: where it sits on the spectrum and how far it
+ * can be pushed. [levelMillibel] is the current gain; [minMillibel]/[maxMillibel] come from the
+ * hardware and differ between devices.
+ */
+data class EqualizerBand(
+    val index: Short,
+    val centerFrequencyHz: Int,
+    val levelMillibel: Short,
+    val minMillibel: Short,
+    val maxMillibel: Short,
+)
+
+/**
+ * Wraps the platform [Equalizer], [BassBoost] and [Virtualizer] for one audio session.
  *
  * @param audioSessionIdProvider read lazily — ExoPlayer only assigns a session id once it has
  *   prepared a media item, so capturing the value at construction time would always give
@@ -16,16 +31,73 @@ class PlayerEqualizer(
     private val audioSessionIdProvider: () -> Int,
 ) {
     private var equalizer: Equalizer? = null
+    private var bassBoost: BassBoost? = null
+    private var virtualizer: Virtualizer? = null
 
+    /**
+     * The session the effects are currently bound to. Tracked so [init] can detect that ExoPlayer
+     * handed out a different session and rebuild the effects against it.
+     */
+    private var boundSessionId: Int = C.AUDIO_SESSION_ID_UNSET
+
+    /** True once the platform accepted an [Equalizer] for the current session. */
+    val isAvailable: Boolean get() = equalizer != null
+
+    /**
+     * Binds the audio effects to the current session, rebuilding them if the session changed.
+     *
+     * Safe to call repeatedly: ExoPlayer reports `AUDIO_SESSION_ID_UNSET` until it has prepared a
+     * media item, so the first call usually does nothing and a later one does the real work.
+     *
+     * @return true when the effects are bound to a live session.
+     */
     @OptIn(UnstableApi::class)
-    fun init() {
+    fun init(): Boolean {
         val sessionId = audioSessionIdProvider()
-        if (sessionId == C.AUDIO_SESSION_ID_UNSET) return
+        if (sessionId == C.AUDIO_SESSION_ID_UNSET) return false
+        if (sessionId == boundSessionId && equalizer != null) return true
 
-        // Some devices refuse to allocate an equalizer for a session; audio should still play.
+        release()
+
+        // Some devices refuse to allocate an effect for a session; audio should still play, and
+        // each effect is independent so a missing Virtualizer must not cost us the Equalizer.
         equalizer = runCatching {
-            Equalizer(EQUALIZER_PRIORITY, sessionId).apply { enabled = true }
+            Equalizer(EFFECT_PRIORITY, sessionId).apply { enabled = true }
         }.getOrNull()
+        bassBoost = runCatching {
+            BassBoost(EFFECT_PRIORITY, sessionId).apply { enabled = true }
+        }.getOrNull()
+        virtualizer = runCatching {
+            Virtualizer(EFFECT_PRIORITY, sessionId).apply { enabled = true }
+        }.getOrNull()
+
+        boundSessionId = if (equalizer != null) sessionId else C.AUDIO_SESSION_ID_UNSET
+
+        return equalizer != null
+    }
+
+    /** Snapshot of every band, or an empty list when no equalizer could be allocated. */
+    fun readBands(): List<EqualizerBand> {
+        val equalizer = equalizer ?: return emptyList()
+        val (min, max) = equalizer.bandLevelRange.let { it[0] to it[1] }
+
+        return (0 until equalizer.numberOfBands).map { band ->
+            val index = band.toShort()
+            EqualizerBand(
+                index = index,
+                centerFrequencyHz = equalizer.getCenterFreq(index) / MILLI_HERTZ_PER_HERTZ,
+                levelMillibel = equalizer.getBandLevel(index),
+                minMillibel = min,
+                maxMillibel = max,
+            )
+        }
+    }
+
+    fun setBandLevel(index: Short, millibel: Short) {
+        val equalizer = equalizer ?: return
+        val (min, max) = equalizer.bandLevelRange.let { it[0] to it[1] }
+
+        runCatching { equalizer.setBandLevel(index, millibel.coerceIn(min, max)) }
     }
 
     fun applyPreset(preset: EqualizerPreset) {
@@ -43,14 +115,37 @@ class PlayerEqualizer(
         }
     }
 
+    /** @param strength 0..1000, the platform's own scale for both effects. */
+    fun setBassBoostStrength(strength: Short) {
+        val effect = bassBoost ?: return
+        if (!effect.strengthSupported) return
+
+        runCatching { effect.setStrength(strength.coerceIn(NO_STRENGTH, MAX_STRENGTH)) }
+    }
+
+    /** @param strength 0..1000, the platform's own scale for both effects. */
+    fun setVirtualizerStrength(strength: Short) {
+        val effect = virtualizer ?: return
+        if (!effect.strengthSupported) return
+
+        runCatching { effect.setStrength(strength.coerceIn(NO_STRENGTH, MAX_STRENGTH)) }
+    }
+
     fun release() {
         equalizer?.release()
+        bassBoost?.release()
+        virtualizer?.release()
         equalizer = null
+        bassBoost = null
+        virtualizer = null
+        boundSessionId = C.AUDIO_SESSION_ID_UNSET
     }
 
     private companion object {
-        const val EQUALIZER_PRIORITY = 0
+        const val EFFECT_PRIORITY = 0
         const val MILLI_HERTZ_PER_HERTZ = 1000
+        const val NO_STRENGTH: Short = 0
+        const val MAX_STRENGTH: Short = 1000
     }
 }
 
@@ -83,7 +178,7 @@ private val MID_RANGE = LOW_HZ..2_000
  */
 private val EqualizerPreset.boosts: List<BandBoost>
     get() = when (this) {
-        EqualizerPreset.NORMAL -> emptyList()
+        EqualizerPreset.NORMAL, EqualizerPreset.CUSTOM -> emptyList()
         EqualizerPreset.BASS_BOOST -> listOf(BandBoost(BASS, divisor = 2))
         EqualizerPreset.TREBLE_BOOST -> listOf(BandBoost(TREBLE, divisor = 2))
         EqualizerPreset.VOCAL -> listOf(BandBoost(VOCAL_RANGE, divisor = 3))

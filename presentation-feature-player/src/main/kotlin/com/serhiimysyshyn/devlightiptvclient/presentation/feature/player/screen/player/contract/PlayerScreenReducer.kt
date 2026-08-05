@@ -23,20 +23,49 @@ class PlayerScreenReducer : BaseScreenReducer<PlayerScreenState, PlayerScreenEve
             },
         )
 
-        is PlayerScreenEvent.PresetApplied -> currentState.copy(
-            currentPreset = event.preset,
-            showPresetDialog = false,
+        is PlayerScreenEvent.FullscreenChanged -> currentState.copy(isFullscreen = event.isFullscreen)
+
+        is PlayerScreenEvent.PlaybackErrorChanged -> currentState.copy(
+            hasPlaybackError = event.hasError,
         )
 
-        is PlayerScreenEvent.ShowPresetDialog -> currentState.copy(showPresetDialog = true)
+        is PlayerScreenEvent.TracksChanged -> currentState.copy(tracks = event.tracks)
 
-        is PlayerScreenEvent.HidePresetDialog -> currentState.copy(showPresetDialog = false)
+        is PlayerScreenEvent.ShowTrackSelector -> currentState.copy(showTrackSelector = true)
 
-        is PlayerScreenEvent.FullscreenChanged -> currentState.copy(isFullscreen = event.isFullscreen)
+        is PlayerScreenEvent.HideTrackSelector -> currentState.copy(showTrackSelector = false)
+
+        is PlayerScreenEvent.PictureInPictureEnabledLoaded -> currentState.copy(
+            isPictureInPictureEnabled = event.isEnabled,
+        )
 
         is PlayerScreenEvent.Error -> currentState.copy(
             isLoading = false,
             isError = true,
+        )
+
+        is AudioEffectEvent -> reduceAudioEffect(currentState, event)
+    }
+
+    /** Split out so the main `when` stays under detekt's complexity ceiling. */
+    private fun reduceAudioEffect(
+        currentState: PlayerScreenState,
+        event: AudioEffectEvent,
+    ): PlayerScreenState = when (event) {
+        // The sheet stays open — the point of the panel is to hear a preset take effect and then
+        // fine-tune it with the band sliders.
+        is PlayerScreenEvent.PresetApplied -> currentState.copy(currentPreset = event.preset)
+
+        is PlayerScreenEvent.ShowAudioSettings -> currentState.copy(showAudioSettings = true)
+
+        is PlayerScreenEvent.HideAudioSettings -> currentState.copy(showAudioSettings = false)
+
+        is PlayerScreenEvent.EqualizerBandsChanged -> currentState.copy(equalizerBands = event.bands)
+
+        is PlayerScreenEvent.BassBoostChanged -> currentState.copy(bassBoostStrength = event.strength)
+
+        is PlayerScreenEvent.VirtualizerChanged -> currentState.copy(
+            virtualizerStrength = event.strength,
         )
     }
 }

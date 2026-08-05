@@ -10,4 +10,6 @@ data class SettingsScreenState(
     val showAppColorsDialog: Boolean = false,
     val showChangeThemeDialog: Boolean = false,
     val currentAppTheme: AppThemeType = AppThemeType.SYSTEM,
+    /** Defaults to on, matching the stored preference's default. */
+    val isPictureInPictureEnabled: Boolean = true,
 )

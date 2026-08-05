@@ -3,8 +3,10 @@ package com.serhiimysyshyn.devlightiptvclient.data.di
 import androidx.room.Room
 import com.serhiimysyshyn.devlightiptvclient.data.database.AppDatabase
 import com.serhiimysyshyn.devlightiptvclient.data.repository.MainRepositoryImpl
+import com.serhiimysyshyn.devlightiptvclient.data.repository.PlayerPreferencesRepositoryImpl
 import com.serhiimysyshyn.devlightiptvclient.data.repository.ThemeRepositoryImpl
 import com.serhiimysyshyn.devlightiptvclient.domain.repository.MainRepository
+import com.serhiimysyshyn.devlightiptvclient.domain.repository.PlayerPreferencesRepository
 import com.serhiimysyshyn.devlightiptvclient.domain.repository.ThemeRepository
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
@@ -28,6 +30,7 @@ val dataModule = module {
 
     single<MainRepository> { MainRepositoryImpl(get(), get(), get()) }
     single<ThemeRepository> { ThemeRepositoryImpl(get()) }
+    single<PlayerPreferencesRepository> { PlayerPreferencesRepositoryImpl(get()) }
 }
 
 private const val DATABASE_NAME = "app_database"
