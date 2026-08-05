@@ -40,7 +40,12 @@ class PlayerViewModel(
             is PlayerScreenIntent.ApplyPreset -> emit(PlayerScreenEvent.PresetApplied(intent.preset))
             is PlayerScreenIntent.ShowPresetDialog -> emit(PlayerScreenEvent.ShowPresetDialog)
             is PlayerScreenIntent.HidePresetDialog -> emit(PlayerScreenEvent.HidePresetDialog)
+            is PlayerScreenIntent.ToggleFullscreen -> toggleFullscreen()
         }
+    }
+
+    private fun toggleFullscreen() {
+        emit(PlayerScreenEvent.FullscreenChanged(!_state.value.isFullscreen))
     }
 
     private fun loadChannel(channelId: Long) {

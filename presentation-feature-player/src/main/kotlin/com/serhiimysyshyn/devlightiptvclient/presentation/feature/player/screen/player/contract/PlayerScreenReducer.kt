@@ -32,6 +32,8 @@ class PlayerScreenReducer : BaseScreenReducer<PlayerScreenState, PlayerScreenEve
 
         is PlayerScreenEvent.HidePresetDialog -> currentState.copy(showPresetDialog = false)
 
+        is PlayerScreenEvent.FullscreenChanged -> currentState.copy(isFullscreen = event.isFullscreen)
+
         is PlayerScreenEvent.Error -> currentState.copy(
             isLoading = false,
             isError = true,

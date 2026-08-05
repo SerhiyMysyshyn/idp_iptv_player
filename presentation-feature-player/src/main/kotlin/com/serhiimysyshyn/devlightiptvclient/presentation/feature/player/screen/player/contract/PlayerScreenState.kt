@@ -13,4 +13,9 @@ data class PlayerScreenState(
     val currentPreset: EqualizerPreset = EqualizerPreset.NORMAL,
     /** Dialog visibility lives in state, not in a `remember` inside the content composable. */
     val showPresetDialog: Boolean = false,
+    /**
+     * When true the video fills the whole screen: app bar and the content below the player are
+     * hidden, the activity switches to landscape and system bars are hidden.
+     */
+    val isFullscreen: Boolean = false,
 )

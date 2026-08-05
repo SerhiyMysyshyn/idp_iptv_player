@@ -15,5 +15,7 @@ sealed interface PlayerScreenEvent {
 
     data object HidePresetDialog : PlayerScreenEvent
 
+    data class FullscreenChanged(val isFullscreen: Boolean) : PlayerScreenEvent
+
     data object Error : PlayerScreenEvent
 }

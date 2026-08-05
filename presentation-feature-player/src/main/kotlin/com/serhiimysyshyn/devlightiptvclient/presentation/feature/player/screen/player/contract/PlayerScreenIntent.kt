@@ -15,4 +15,6 @@ sealed interface PlayerScreenIntent {
     data object ShowPresetDialog : PlayerScreenIntent
 
     data object HidePresetDialog : PlayerScreenIntent
+
+    data object ToggleFullscreen : PlayerScreenIntent
 }

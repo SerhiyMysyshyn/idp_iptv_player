@@ -2,7 +2,9 @@ package com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen
 
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,63 +60,68 @@ internal fun PlayerContent(
     val unknownChannel = stringResource(CoreUiR.string.player_unknown_channel)
     val channelName = state.currentChannel?.name ?: unknownChannel
 
-    Scaffold(
-        modifier = modifier,
-        containerColor = Theme.colors.semantic.background.primaryMain,
-        topBar = {
-            MainAppBar(
-                title = channelName,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                navigationContentDescription = stringResource(CoreUiR.string.navigate_back),
-                onNavigationClick = onNavigateBack,
-            )
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
+    // In fullscreen the video is the only thing on screen — no Scaffold, no app bar, black
+    // background so the letterbox bars around a non-16:9 stream aren't visible.
+    if (state.isFullscreen) {
+        Box(
+            modifier = modifier
                 .fillMaxSize()
-                .padding(padding),
+                .background(Color.Black),
         ) {
-            AndroidView(
-                factory = { context ->
-                    PlayerView(context).apply {
-                        useController = true
-                        layoutParams = FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                        )
-                    }
-                },
-                // Attaching the player in `update` rather than `factory` keeps the view usable
-                // after the composable is reused with a different ExoPlayer instance.
-                update = { view -> view.player = exoPlayer },
-                onRelease = { view -> view.player = null },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(VIDEO_ASPECT_RATIO),
+            VideoSurface(
+                exoPlayer = exoPlayer,
+                onIntent = onIntent,
+                modifier = Modifier.fillMaxSize(),
             )
-
-            Spacer(Modifier.height(Theme.spacing.m))
-
-            Text(
-                text = stringResource(CoreUiR.string.player_stream_title, channelName),
-                style = Theme.typography.h2,
-                color = Theme.colors.semantic.text.primary,
-                modifier = Modifier.padding(horizontal = Theme.spacing.m),
-            )
-
-            Spacer(Modifier.height(Theme.spacing.m))
-
-            PlayerActions(state = state, onIntent = onIntent)
-
-            Spacer(Modifier.height(Theme.spacing.m))
-
-            if (state.likedChannels.isNotEmpty()) {
-                FavouriteChannels(
-                    state = state,
-                    onIntent = onIntent,
-                    modifier = Modifier.weight(1f),
+        }
+    } else {
+        Scaffold(
+            modifier = modifier,
+            containerColor = Theme.colors.semantic.background.primaryMain,
+            topBar = {
+                MainAppBar(
+                    title = channelName,
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                    navigationContentDescription = stringResource(CoreUiR.string.navigate_back),
+                    onNavigationClick = onNavigateBack,
                 )
+            },
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+            ) {
+                VideoSurface(
+                    exoPlayer = exoPlayer,
+                    onIntent = onIntent,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(VIDEO_ASPECT_RATIO),
+                )
+
+                Spacer(Modifier.height(Theme.spacing.m))
+
+                Text(
+                    text = stringResource(CoreUiR.string.player_stream_title, channelName),
+                    style = Theme.typography.h2,
+                    color = Theme.colors.semantic.text.primary,
+                    modifier = Modifier.padding(horizontal = Theme.spacing.m),
+                )
+
+                Spacer(Modifier.height(Theme.spacing.m))
+
+                PlayerActions(state = state, onIntent = onIntent)
+
+                Spacer(Modifier.height(Theme.spacing.m))
+
+                if (state.likedChannels.isNotEmpty()) {
+                    FavouriteChannels(
+                        state = state,
+                        onIntent = onIntent,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
     }
@@ -125,6 +133,38 @@ internal fun PlayerContent(
             onDismiss = { onIntent(PlayerScreenIntent.HidePresetDialog) },
         )
     }
+}
+
+/**
+ * The video surface.
+ *
+ * The fullscreen toggle is media3's own controller button — it only renders once a
+ * [PlayerView.setFullscreenButtonClickListener] is attached, and media3 swaps the enter/exit
+ * icon itself based on the flag passed back to the listener.
+ */
+@Composable
+private fun VideoSurface(
+    exoPlayer: ExoPlayer,
+    onIntent: (PlayerScreenIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AndroidView(
+        factory = { context ->
+            PlayerView(context).apply {
+                useController = true
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                )
+                setFullscreenButtonClickListener { onIntent(PlayerScreenIntent.ToggleFullscreen) }
+            }
+        },
+        // Attaching the player in `update` rather than `factory` keeps the view usable
+        // after the composable is reused with a different ExoPlayer instance.
+        update = { view -> view.player = exoPlayer },
+        onRelease = { view -> view.player = null },
+        modifier = modifier,
+    )
 }
 
 @Composable

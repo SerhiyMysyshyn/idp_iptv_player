@@ -1,5 +1,10 @@
 package com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.pm.ActivityInfo
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -7,9 +12,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.contract.PlayerScreenIntent
 import com.serhiimysyshyn.devlightiptvclient.presentation.feature.player.screen.player.equalizer.PlayerEqualizer
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,6 +64,14 @@ fun PlayerScreen(
         }
     }
 
+    FullscreenEffect(isFullscreen = state.isFullscreen)
+
+    // In fullscreen the system back gesture collapses back to the normal layout instead of
+    // leaving the screen entirely.
+    BackHandler(enabled = state.isFullscreen) {
+        viewModel.processIntent(PlayerScreenIntent.ToggleFullscreen)
+    }
+
     PlayerContent(
         state = state,
         exoPlayer = exoPlayer,
@@ -62,4 +79,41 @@ fun PlayerScreen(
         onNavigateBack = onNavigateBack,
         modifier = modifier,
     )
+}
+
+/**
+ * Drives the window-level side of fullscreen: landscape orientation and hidden system bars.
+ *
+ * Both are restored on dispose so leaving the player mid-fullscreen doesn't leak a locked
+ * orientation into the rest of the app.
+ */
+@Composable
+private fun FullscreenEffect(isFullscreen: Boolean) {
+    val activity = LocalContext.current.findActivity() ?: return
+
+    DisposableEffect(isFullscreen) {
+        val controller = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+
+        if (isFullscreen) {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            controller.show(WindowInsetsCompat.Type.systemBars())
+        }
+
+        onDispose {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            controller.show(WindowInsetsCompat.Type.systemBars())
+        }
+    }
+}
+
+/** Compose hands out a `ContextWrapper`, so unwrap until the hosting [Activity] surfaces. */
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
